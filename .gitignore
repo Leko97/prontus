@@ -1,0 +1,31 @@
+# Dependências
+node_modules/
+vendor/
+
+# Ambiente
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Cache e build
+.cache/
+dist/
+build/
+
+# PHP
+*.phar
+composer.lock
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
