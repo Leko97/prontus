@@ -22,9 +22,9 @@
         <input type="hidden" name="redirect" value="/src/kds/pages/index.php">
 
         <div class="form-group">
-          <label class="form-label" for="usuario">Usuário</label>
-          <input type="text" id="usuario" name="usuario" class="form-control"
-            placeholder="cozinha" autocomplete="username">
+          <label class="form-label" for="email">E-mail</label>
+          <input type="email" id="email" name="email" class="form-control"
+            placeholder="cozinha@prontus.app" autocomplete="email">
         </div>
 
         <div class="form-group">
@@ -51,15 +51,11 @@
       document.getElementById('errorAlert').classList.remove('hidden');
     }
 
-    /* Mock: login direto */
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
+    /* Feedback visual ao submeter */
+    document.getElementById('loginForm').addEventListener('submit', () => {
       const btn = document.getElementById('btnEntrar');
       btn.disabled = true;
       btn.textContent = 'Entrando…';
-      setTimeout(() => {
-        window.location.href = '/src/kds/pages/index.php';
-      }, 500);
     });
   </script>
 </body>

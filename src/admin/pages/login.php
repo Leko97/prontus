@@ -49,15 +49,11 @@
       document.getElementById('errorAlert').classList.remove('hidden');
     }
 
-    /* Em modo mock: simular login direto */
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
+    /* Feedback visual ao submeter */
+    document.getElementById('loginForm').addEventListener('submit', () => {
       const btn = document.getElementById('btnLogin');
       btn.disabled = true;
       btn.textContent = 'Entrando…';
-      setTimeout(() => {
-        window.location.href = '/src/admin/pages/dashboard.php';
-      }, 600);
     });
   </script>
 </body>
