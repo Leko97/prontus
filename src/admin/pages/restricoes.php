@@ -1,34 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Restrições — Prontus Admin</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/admin/assets/css/admin.css">
-  <style>
-    .restricoes-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-3);
-    }
-
-    .add-restricao-form {
-      display: flex;
-      gap: var(--space-3);
-      align-items: flex-end;
-      padding: var(--space-5);
-      background: var(--color-bg);
-      border-radius: var(--radius-md);
-      border: 1.5px dashed var(--color-border);
-      margin-top: var(--space-5);
-    }
-
-    .add-restricao-form .form-group { margin-bottom: 0; flex: 1; }
-  </style>
-</head>
+<?php $pageTitle = 'Restrições — Prontus Admin'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
   <div class="admin-layout">
 

@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acesso à Cozinha — Prontus KDS</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/kds/assets/css/kds.css">
-</head>
+<?php $pageTitle = 'Acesso à Cozinha — Prontus KDS'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
   <div class="kds-login-page">
     <div class="kds-login-card">
@@ -27,7 +19,7 @@
       </div>
 
       <form id="loginForm" action="/api/auth/login" method="POST" novalidate>
-        <input type="hidden" name="redirect" value="/src/kds/pages/index.html">
+        <input type="hidden" name="redirect" value="/src/kds/pages/index.php">
 
         <div class="form-group">
           <label class="form-label" for="usuario">Usuário</label>
@@ -66,7 +58,7 @@
       btn.disabled = true;
       btn.textContent = 'Entrando…';
       setTimeout(() => {
-        window.location.href = '/src/kds/pages/index.html';
+        window.location.href = '/src/kds/pages/index.php';
       }, 500);
     });
   </script>

@@ -11,16 +11,16 @@ export async function protegerRota() {
 }
 
 function redirectLogin() {
-  window.location.href = '/src/admin/pages/login.html';
+  window.location.href = '/src/admin/pages/login.php';
 }
 
 /* -------- Sidebar -------- */
 const NAV_LINKS = [
-  { href: '/src/admin/pages/dashboard.html',    icon: '📊', label: 'Dashboard' },
-  { href: '/src/admin/pages/produtos.html',     icon: '🍔', label: 'Produtos' },
-  { href: '/src/admin/pages/categorias.html',   icon: '🗂️',  label: 'Categorias' },
-  { href: '/src/admin/pages/adicionais.html',   icon: '➕', label: 'Adicionais' },
-  { href: '/src/admin/pages/restricoes.html',   icon: '⚠️',  label: 'Restrições' },
+  { href: '/src/admin/pages/dashboard.php',    icon: '📊', label: 'Dashboard' },
+  { href: '/src/admin/pages/produtos.php',     icon: '🍔', label: 'Produtos' },
+  { href: '/src/admin/pages/categorias.php',   icon: '🗂️',  label: 'Categorias' },
+  { href: '/src/admin/pages/adicionais.php',   icon: '➕', label: 'Adicionais' },
+  { href: '/src/admin/pages/restricoes.php',   icon: '⚠️',  label: 'Restrições' },
 ];
 
 export function renderSidebar(containerSelector = '#sidebar') {
@@ -30,7 +30,7 @@ export function renderSidebar(containerSelector = '#sidebar') {
   const currentPath = window.location.pathname;
 
   sidebar.innerHTML = `
-    <a href="/src/admin/pages/dashboard.html" class="sidebar-logo">
+    <a href="/src/admin/pages/dashboard.php" class="sidebar-logo">
       <div class="sidebar-logo-icon">🍽️</div>
       <div>
         <span class="sidebar-logo-text">Prontus</span>

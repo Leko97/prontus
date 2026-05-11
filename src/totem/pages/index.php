@@ -1,19 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardápio — Prontus</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/totem/assets/css/totem.css">
-</head>
+<?php $pageTitle = 'Cardápio — Prontus'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
 
   <!-- Header -->
   <header class="totem-header">
-    <a href="/src/totem/pages/index.html" class="totem-logo">
+    <a href="/src/totem/pages/index.php" class="totem-logo">
       <div class="totem-logo-icon">🍽️</div>
       <div>
         <div class="totem-logo-name">Prontus</div>
@@ -21,7 +13,7 @@
       </div>
     </a>
     <div class="totem-header-right">
-      <a href="/src/totem/pages/carrinho.html" class="cart-btn" id="headerCartBtn">
+      <a href="/src/totem/pages/carrinho.php" class="cart-btn" id="headerCartBtn">
         <span class="cart-btn-icon">🛒</span>
         <span>Carrinho</span>
         <span class="cart-badge hidden" id="headerCartBadge">0</span>
@@ -81,7 +73,7 @@
       <span class="cart-float-count" id="cartFloatCount">0 itens no pedido</span>
       <span class="cart-float-total" id="cartFloatTotal">R$ 0,00</span>
     </div>
-    <a href="/src/totem/pages/carrinho.html" class="cart-float-btn">
+    <a href="/src/totem/pages/carrinho.php" class="cart-float-btn">
       Ver pedido →
     </a>
   </div>

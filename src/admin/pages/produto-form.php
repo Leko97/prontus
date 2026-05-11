@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Produto — Prontus Admin</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/admin/assets/css/admin.css">
-</head>
+<?php $pageTitle = 'Produto — Prontus Admin'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
   <div class="admin-layout">
 
@@ -23,7 +15,7 @@
           <h1 class="topbar-title" id="pageTitle">Novo Produto</h1>
         </div>
         <div class="topbar-actions">
-          <a href="/src/admin/pages/produtos.html" class="btn btn-ghost btn-sm">← Voltar</a>
+          <a href="/src/admin/pages/produtos.php" class="btn btn-ghost btn-sm">← Voltar</a>
         </div>
       </header>
 
@@ -104,7 +96,7 @@
 
           <div style="display:flex;gap:12px">
             <button type="submit" class="btn btn-primary" id="btnSalvar">Salvar produto</button>
-            <a href="/src/admin/pages/produtos.html" class="btn btn-ghost">Cancelar</a>
+            <a href="/src/admin/pages/produtos.php" class="btn btn-ghost">Cancelar</a>
           </div>
         </form>
 
@@ -240,7 +232,7 @@
       try {
         await salvarProduto(dados);
         showToast(isEdit ? 'Produto atualizado!' : 'Produto criado!');
-        setTimeout(() => window.location.href = '/src/admin/pages/produtos.html', 800);
+        setTimeout(() => window.location.href = '/src/admin/pages/produtos.php', 800);
       } catch (err) {
         showToast('Erro ao salvar produto.', 'error');
         btn.disabled = false;

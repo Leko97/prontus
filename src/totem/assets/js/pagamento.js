@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (totalEl) totalEl.textContent = formatCurrency(total);
 
   if (total === 0) {
-    window.location.href = '/src/totem/pages/carrinho.html';
+    window.location.href = '/src/totem/pages/carrinho.php';
     return;
   }
 
@@ -68,7 +68,7 @@ async function confirmarPagamento() {
     const resultado = await criarPedido(payload);
 
     limparCarrinho();
-    window.location.href = `/src/totem/pages/senha.html?senha=${encodeURIComponent(resultado.senha)}`;
+    window.location.href = `/src/totem/pages/senha.php?senha=${encodeURIComponent(resultado.senha)}`;
   } catch (err) {
     console.error(err);
 

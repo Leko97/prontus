@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pedido Confirmado — Prontus</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/totem/assets/css/totem.css">
-</head>
+<?php $pageTitle = 'Pedido Confirmado — Prontus'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
 
   <header class="totem-header">
@@ -99,7 +91,7 @@
 
     /* Botão novo pedido */
     document.getElementById('btnNovoPedido').addEventListener('click', () => {
-      window.location.href = '/src/totem/pages/index.html';
+      window.location.href = '/src/totem/pages/index.php';
     });
 
     /* Contagem regressiva e auto-redirect */
@@ -112,7 +104,7 @@
 
       if (segundos <= 0) {
         clearInterval(timer);
-        window.location.href = '/src/totem/pages/index.html';
+        window.location.href = '/src/totem/pages/index.php';
       }
     }, 1000);
 

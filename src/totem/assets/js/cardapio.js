@@ -145,7 +145,7 @@ function renderProdutos(produtos) {
     ).join('');
 
     return `
-      <a class="produto-card" href="/src/totem/pages/produto.html?id=${p.id}">
+      <a class="produto-card" href="/src/totem/pages/produto.php?id=${p.id}">
         <div class="produto-img">${icon}</div>
         <div class="produto-info">
           <div class="produto-nome">${p.nome}</div>
@@ -154,7 +154,7 @@ function renderProdutos(produtos) {
         </div>
         <div class="produto-footer">
           <span class="produto-preco">${formatCurrency(p.preco)}</span>
-          <button class="btn-add-produto" onclick="event.preventDefault();event.stopPropagation();location.href='/src/totem/pages/produto.html?id=${p.id}'">
+          <button class="btn-add-produto" onclick="event.preventDefault();event.stopPropagation();location.href='/src/totem/pages/produto.php?id=${p.id}'">
             + Adicionar
           </button>
         </div>

@@ -1,18 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pagamento — Prontus</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/totem/assets/css/totem.css">
-</head>
+<?php $pageTitle = 'Pagamento — Prontus'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
 
   <header class="totem-header">
-    <a href="/src/totem/pages/carrinho.html" class="totem-logo">
+    <a href="/src/totem/pages/carrinho.php" class="totem-logo">
       <div class="totem-logo-icon">🍽️</div>
       <div>
         <div class="totem-logo-name">Prontus</div>
@@ -24,7 +16,7 @@
   <div class="totem-container" style="max-width:760px;margin:0 auto">
 
     <div style="margin-bottom:var(--space-6)">
-      <a href="/src/totem/pages/carrinho.html" class="btn-back">← Voltar ao carrinho</a>
+      <a href="/src/totem/pages/carrinho.php" class="btn-back">← Voltar ao carrinho</a>
     </div>
 
     <h1 style="font-size:var(--text-2xl);font-weight:var(--font-bold);margin-bottom:var(--space-6)">

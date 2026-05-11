@@ -1,26 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Produto — Prontus</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/totem/assets/css/totem.css">
-</head>
+<?php $pageTitle = 'Produto — Prontus'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
 
   <!-- Header -->
   <header class="totem-header">
-    <a href="/src/totem/pages/index.html" class="totem-logo">
+    <a href="/src/totem/pages/index.php" class="totem-logo">
       <div class="totem-logo-icon">🍽️</div>
       <div>
         <div class="totem-logo-name">Prontus</div>
       </div>
     </a>
     <div class="totem-header-right">
-      <a href="/src/totem/pages/carrinho.html" class="cart-btn">
+      <a href="/src/totem/pages/carrinho.php" class="cart-btn">
         <span class="cart-btn-icon">🛒</span>
         <span>Carrinho</span>
         <span class="cart-badge hidden" id="headerCartBadge">0</span>
@@ -31,7 +23,7 @@
   <div class="totem-container">
 
     <div style="margin-bottom:var(--space-6)">
-      <a href="/src/totem/pages/index.html" class="btn-back">← Voltar ao cardápio</a>
+      <a href="/src/totem/pages/index.php" class="btn-back">← Voltar ao cardápio</a>
     </div>
 
     <!-- Skeleton enquanto carrega -->
@@ -105,7 +97,7 @@
     <div id="errorState" class="hidden" style="text-align:center;padding:64px">
       <div style="font-size:3rem;margin-bottom:16px">⚠️</div>
       <h2>Produto não encontrado</h2>
-      <a href="/src/totem/pages/index.html" class="btn btn-primary" style="margin-top:24px">
+      <a href="/src/totem/pages/index.php" class="btn btn-primary" style="margin-top:24px">
         Voltar ao cardápio
       </a>
     </div>
@@ -304,7 +296,7 @@
         adicionarItem(produto, extrasComQtd, [...removidos], quantidade);
       }
 
-      window.location.href = '/src/totem/pages/index.html';
+      window.location.href = '/src/totem/pages/index.php';
     });
   </script>
 </body>

@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Categoria — Prontus Admin</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/admin/assets/css/admin.css">
-</head>
+<?php $pageTitle = 'Categoria — Prontus Admin'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
   <div class="admin-layout">
 
@@ -23,7 +15,7 @@
           <h1 class="topbar-title" id="pageTitle">Nova Categoria</h1>
         </div>
         <div class="topbar-actions">
-          <a href="/src/admin/pages/categorias.html" class="btn btn-ghost btn-sm">← Voltar</a>
+          <a href="/src/admin/pages/categorias.php" class="btn btn-ghost btn-sm">← Voltar</a>
         </div>
       </header>
 
@@ -57,7 +49,7 @@
 
           <div style="display:flex;gap:12px">
             <button type="submit" class="btn btn-primary" id="btnSalvar">Salvar categoria</button>
-            <a href="/src/admin/pages/categorias.html" class="btn btn-ghost">Cancelar</a>
+            <a href="/src/admin/pages/categorias.php" class="btn btn-ghost">Cancelar</a>
           </div>
         </form>
 
@@ -114,7 +106,7 @@
       try {
         await salvarCategoria(dados);
         showToast(isEdit ? 'Categoria atualizada!' : 'Categoria criada!');
-        setTimeout(() => window.location.href = '/src/admin/pages/categorias.html', 800);
+        setTimeout(() => window.location.href = '/src/admin/pages/categorias.php', 800);
       } catch (err) {
         showToast('Erro ao salvar categoria.', 'error');
         btn.disabled = false;

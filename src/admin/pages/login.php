@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — Prontus Admin</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/admin/assets/css/admin.css">
-</head>
+<?php $pageTitle = 'Login — Prontus Admin'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
   <div class="login-page">
     <div class="login-card">
@@ -25,7 +17,7 @@
       </div>
 
       <form id="loginForm" action="/api/auth/login" method="POST" novalidate>
-        <input type="hidden" name="redirect" value="/src/admin/pages/dashboard.html">
+        <input type="hidden" name="redirect" value="/src/admin/pages/dashboard.php">
 
         <div class="form-group">
           <label class="form-label" for="email">E-mail <span class="required">*</span></label>
@@ -64,7 +56,7 @@
       btn.disabled = true;
       btn.textContent = 'Entrando…';
       setTimeout(() => {
-        window.location.href = '/src/admin/pages/dashboard.html';
+        window.location.href = '/src/admin/pages/dashboard.php';
       }, 600);
     });
   </script>

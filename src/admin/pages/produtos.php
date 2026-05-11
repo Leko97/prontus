@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Produtos — Prontus Admin</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/admin/assets/css/admin.css">
-</head>
+<?php $pageTitle = 'Produtos — Prontus Admin'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
   <div class="admin-layout">
 
@@ -23,7 +15,7 @@
           <h1 class="topbar-title">Produtos</h1>
         </div>
         <div class="topbar-actions">
-          <a href="/src/admin/pages/produto-form.html" class="btn btn-primary btn-sm">
+          <a href="/src/admin/pages/produto-form.php" class="btn btn-primary btn-sm">
             + Novo Produto
           </a>
         </div>
@@ -36,7 +28,7 @@
             <h1>Gerenciar Produtos</h1>
             <p>Cadastre e edite os itens do cardápio</p>
           </div>
-          <a href="/src/admin/pages/produto-form.html" class="btn btn-primary">+ Novo Produto</a>
+          <a href="/src/admin/pages/produto-form.php" class="btn btn-primary">+ Novo Produto</a>
         </div>
 
         <div class="search-bar">

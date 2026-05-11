@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   iniciarPolling(onNovosDados, 2000);
 
   document.getElementById('btnLogout')?.addEventListener('click', () => {
-    window.location.href = '/src/kds/pages/login.html';
+    window.location.href = '/src/kds/pages/login.php';
   });
 });
 

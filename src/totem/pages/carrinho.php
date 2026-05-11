@@ -1,18 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carrinho — Prontus</title>
-  <link rel="stylesheet" href="/src/shared/css/variables.css">
-  <link rel="stylesheet" href="/src/shared/css/reset.css">
-  <link rel="stylesheet" href="/src/shared/css/components.css">
-  <link rel="stylesheet" href="/src/totem/assets/css/totem.css">
-</head>
+<?php $pageTitle = 'Carrinho — Prontus'; require_once __DIR__ . '/inc/head.php'; ?>
 <body>
 
   <header class="totem-header">
-    <a href="/src/totem/pages/index.html" class="totem-logo">
+    <a href="/src/totem/pages/index.php" class="totem-logo">
       <div class="totem-logo-icon">🍽️</div>
       <div>
         <div class="totem-logo-name">Prontus</div>
@@ -24,7 +16,7 @@
   <div class="totem-container" style="max-width:800px;margin:0 auto">
 
     <div style="margin-bottom:var(--space-6)">
-      <a href="/src/totem/pages/index.html" class="btn-back">← Continuar comprando</a>
+      <a href="/src/totem/pages/index.php" class="btn-back">← Continuar comprando</a>
     </div>
 
     <h1 style="font-size:var(--text-2xl);font-weight:var(--font-bold);margin-bottom:var(--space-6)">
@@ -38,7 +30,7 @@
       <p style="color:var(--color-text-muted);margin-bottom:var(--space-6)">
         Adicione itens do cardápio para continuar.
       </p>
-      <a href="/src/totem/pages/index.html" class="btn btn-primary btn-lg">Ver cardápio</a>
+      <a href="/src/totem/pages/index.php" class="btn btn-primary btn-lg">Ver cardápio</a>
     </div>
 
     <!-- Itens -->
@@ -61,10 +53,10 @@
         </div>
 
         <div style="display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-5)">
-          <a href="/src/totem/pages/pagamento.html" class="btn btn-primary btn-full btn-lg">
+          <a href="/src/totem/pages/pagamento.php" class="btn btn-primary btn-full btn-lg">
             Finalizar pedido →
           </a>
-          <a href="/src/totem/pages/index.html" class="btn btn-ghost btn-full">
+          <a href="/src/totem/pages/index.php" class="btn btn-ghost btn-full">
             Adicionar mais itens
           </a>
         </div>
@@ -134,7 +126,7 @@
         btn.addEventListener('click', () => {
           const idx = btn.dataset.idx;
           const item = carrinho[idx];
-          window.location.href = `/src/totem/pages/produto.html?id=${item.produtoId}&editar=${idx}`;
+          window.location.href = `/src/totem/pages/produto.php?id=${item.produtoId}&editar=${idx}`;
         });
       });
 

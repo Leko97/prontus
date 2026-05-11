@@ -49,7 +49,7 @@ function renderTabela(produtos) {
       <td>
         <div class="table-actions">
           <button class="btn-action btn-edit" title="Editar"
-            onclick="location.href='/src/admin/pages/produto-form.html?id=${p.id}'">✏️</button>
+            onclick="location.href='/src/admin/pages/produto-form.php?id=${p.id}'">✏️</button>
           <button class="btn-action btn-delete" title="Excluir"
             data-id="${p.id}" data-nome="${p.nome}">🗑️</button>
         </div>
