@@ -25,7 +25,8 @@ jobs:
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
             cd /var/www/prontus &&
-            GIT_TERMINAL_PROMPT=0 git pull origin main &&
+            git fetch origin &&
+            git reset --hard origin/main &&
             chown -R www-data:www-data /var/www/prontus &&
             chmod -R 755 /var/www/prontus &&
             echo 'Deploy concluído em \$(date)'
