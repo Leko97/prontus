@@ -1,0 +1,18 @@
+RewriteEngine On
+RewriteBase /
+
+# Headers CORS para desenvolvimento local
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+Header always set Access-Control-Allow-Headers "Content-Type"
+
+# Responder OPTIONS imediatamente
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^api/(.*)$ - [R=200,L]
+
+# Evita rewrite de arquivos e diretórios reais
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Roteia tudo que começa com /api para o index.php
+RewriteRule ^api/(.*)$ backend/api/index.php [QSA,L]
