@@ -1,4 +1,4 @@
-const USE_MOCK = true;
+const USE_MOCK = false;
 const API_BASE = window.PRONTUS_API_URL || '/api';
 
 async function fetchAPI(endpoint, options = {}) {
