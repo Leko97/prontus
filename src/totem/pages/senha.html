@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido Confirmado — Prontus</title>
+  <link rel="stylesheet" href="/src/shared/css/variables.css">
+  <link rel="stylesheet" href="/src/shared/css/reset.css">
+  <link rel="stylesheet" href="/src/shared/css/components.css">
+  <link rel="stylesheet" href="/src/totem/assets/css/totem.css">
+</head>
+<body>
+
+  <header class="totem-header">
+    <div class="totem-logo">
+      <div class="totem-logo-icon">🍽️</div>
+      <div>
+        <div class="totem-logo-name">Prontus</div>
+        <div class="totem-logo-sub">Pedido confirmado!</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="totem-container">
+    <div class="senha-page">
+
+      <!-- Senha em destaque -->
+      <div class="senha-badge" id="senhaBadge">#000</div>
+
+      <h1 class="senha-titulo">Pedido recebido! 🎉</h1>
+      <p class="senha-msg">
+        Aguarde seu número ser chamado na tela. Seu pedido está sendo preparado com carinho.
+      </p>
+
+      <!-- Resumo dos itens -->
+      <div class="senha-resumo" id="senhaResumo">
+        <div class="senha-resumo-title">Resumo do pedido</div>
+        <div id="senhaItensList">
+          <div class="senha-resumo-item">
+            <span style="color:var(--color-text-muted)">Carregando…</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ações -->
+      <button class="btn btn-primary btn-lg" id="btnNovoPedido">
+        🍽️ Fazer novo pedido
+      </button>
+
+      <div class="countdown" id="countdown">
+        Redirecionando automaticamente em <span class="countdown-n" id="countdownN">30</span>s
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module">
+    import { formatCurrency, getParam } from '/src/shared/js/utils.js';
+    import { limparCarrinho } from '/src/totem/assets/js/carrinho.js';
+
+    const senha = getParam('senha') || '#???';
+    document.getElementById('senhaBadge').textContent = senha;
+    document.title = `Senha ${senha} — Prontus`;
+
+    /* Resumo salvo antes de limpar o carrinho */
+    const resumoRaw = sessionStorage.getItem('prontus_ultimo_resumo');
+    let resumo = null;
+    try { resumo = JSON.parse(resumoRaw); } catch {}
+
+    const list = document.getElementById('senhaItensList');
+
+    if (resumo?.itens?.length) {
+      list.innerHTML = resumo.itens.map(item => `
+        <div class="senha-resumo-item">
+          <span>${item.quantidade}× ${item.produto}</span>
+          ${item.extras?.length ? `<span style="color:var(--color-text-muted);font-size:var(--text-xs)">+ ${item.extras.join(', ')}</span>` : ''}
+        </div>
+      `).join('');
+
+      if (resumo.total) {
+        list.innerHTML += `
+          <div class="senha-resumo-item" style="margin-top:8px;font-weight:600">
+            <span>Total</span>
+            <span style="color:var(--color-primary)">${formatCurrency(resumo.total)}</span>
+          </div>
+        `;
+      }
+    } else {
+      list.innerHTML = `
+        <div class="senha-resumo-item">
+          <span style="color:var(--color-text-muted)">Pedido registrado com sucesso.</span>
+        </div>
+      `;
+    }
+
+    /* Limpar dados da sessão */
+    limparCarrinho();
+    sessionStorage.removeItem('prontus_ultimo_resumo');
+
+    /* Botão novo pedido */
+    document.getElementById('btnNovoPedido').addEventListener('click', () => {
+      window.location.href = '/src/totem/pages/index.html';
+    });
+
+    /* Contagem regressiva e auto-redirect */
+    let segundos = 30;
+    const countN = document.getElementById('countdownN');
+
+    const timer = setInterval(() => {
+      segundos--;
+      if (countN) countN.textContent = segundos;
+
+      if (segundos <= 0) {
+        clearInterval(timer);
+        window.location.href = '/src/totem/pages/index.html';
+      }
+    }, 1000);
+
+    /* Cancelar contagem se o usuário interagir */
+    document.addEventListener('click', () => {
+      clearInterval(timer);
+      document.getElementById('countdown').style.display = 'none';
+    }, { once: true });
+  </script>
+
+  <script type="module">
+    /* Salvar resumo antes do criarPedido limpar o carrinho */
+    import { getCarrinho, calcularTotal } from '/src/totem/assets/js/carrinho.js';
+
+    const carrinho = getCarrinho();
+    if (carrinho.length) {
+      sessionStorage.setItem('prontus_ultimo_resumo', JSON.stringify({
+        itens:  carrinho.map(i => ({ produto: i.nome, quantidade: i.quantidade, extras: (i.extras||[]).map(e=>e.nome) })),
+        total:  calcularTotal(),
+      }));
+    }
+  </script>
+</body>
+</html>

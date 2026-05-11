@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Prontus Admin</title>
+  <link rel="stylesheet" href="/src/shared/css/variables.css">
+  <link rel="stylesheet" href="/src/shared/css/reset.css">
+  <link rel="stylesheet" href="/src/shared/css/components.css">
+  <link rel="stylesheet" href="/src/admin/assets/css/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar"></aside>
+
+    <!-- Conteúdo -->
+    <div class="admin-content">
+      <header class="admin-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
+          <h1 class="topbar-title">Dashboard</h1>
+        </div>
+        <div class="topbar-actions">
+          <span style="font-size:var(--text-sm);color:var(--color-text-muted)" id="topbarDate"></span>
+        </div>
+      </header>
+
+      <main class="admin-main">
+
+        <!-- Métricas -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon">📦</div>
+            <div class="metric-label">Total de pedidos</div>
+            <div class="metric-value" id="metTotal">—</div>
+            <div class="metric-sub">Hoje</div>
+          </div>
+          <div class="metric-card warning">
+            <div class="metric-icon">⏱️</div>
+            <div class="metric-label">Tempo médio</div>
+            <div class="metric-value" id="metTempo">—</div>
+            <div class="metric-sub">Por pedido</div>
+          </div>
+          <div class="metric-card success">
+            <div class="metric-icon">💰</div>
+            <div class="metric-label">Volume de vendas</div>
+            <div class="metric-value" id="metVolume">—</div>
+            <div class="metric-sub">Hoje</div>
+          </div>
+          <div class="metric-card info">
+            <div class="metric-icon">🔥</div>
+            <div class="metric-label">Pedidos em aberto</div>
+            <div class="metric-value" id="metAbertos">—</div>
+            <div class="metric-sub">Agora</div>
+          </div>
+        </div>
+
+        <!-- Gráfico -->
+        <div class="chart-section">
+          <h2 class="chart-title">Pedidos por hora</h2>
+          <canvas id="chartCanvas" height="200"></canvas>
+        </div>
+
+        <!-- Últimos pedidos -->
+        <div class="recent-section">
+          <div class="recent-header">
+            <h2 class="recent-title">Últimos pedidos</h2>
+            <a href="/src/admin/pages/dashboard.html" class="btn btn-ghost btn-sm">Ver todos</a>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Senha</th>
+                <th>Itens</th>
+                <th>Status</th>
+                <th>Horário</th>
+              </tr>
+            </thead>
+            <tbody id="recentTbody">
+              <tr><td colspan="4" class="table-empty">
+                <div class="spinner-center"><div class="spinner"></div></div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="/src/admin/assets/js/dashboard.js"></script>
+  <script>
+    /* Data no topbar */
+    document.getElementById('topbarDate').textContent =
+      new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+  </script>
+</body>
+</html>

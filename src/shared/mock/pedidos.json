@@ -1,0 +1,120 @@
+[
+  {
+    "id": 1,
+    "senha": "#042",
+    "status": "recebido",
+    "horario": "2026-05-10T12:01:00",
+    "itens": [
+      {
+        "produto": "X-Burguer Clássico",
+        "quantidade": 1,
+        "extras": ["Bacon extra"],
+        "remocoes": ["Cebola"],
+        "restricoes": []
+      },
+      {
+        "produto": "Refrigerante Lata",
+        "quantidade": 2,
+        "extras": [],
+        "remocoes": [],
+        "restricoes": []
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "senha": "#107",
+    "status": "em-preparo",
+    "horario": "2026-05-10T12:05:00",
+    "itens": [
+      {
+        "produto": "Burger Vegano",
+        "quantidade": 1,
+        "extras": ["Abacate"],
+        "remocoes": ["Tomate"],
+        "restricoes": ["vegano", "sem-lactose"]
+      },
+      {
+        "produto": "Suco Natural",
+        "quantidade": 1,
+        "extras": ["Com gengibre"],
+        "remocoes": ["Açúcar"],
+        "restricoes": ["vegano", "sem-lactose", "sem-gluten"]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "senha": "#215",
+    "status": "em-preparo",
+    "horario": "2026-05-10T11:53:00",
+    "itens": [
+      {
+        "produto": "X-Bacon Supreme",
+        "quantidade": 2,
+        "extras": ["Cheddar extra"],
+        "remocoes": [],
+        "restricoes": []
+      },
+      {
+        "produto": "Batata Frita Média",
+        "quantidade": 1,
+        "extras": ["Cheddar derretido"],
+        "remocoes": [],
+        "restricoes": []
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "senha": "#331",
+    "status": "pronto",
+    "horario": "2026-05-10T12:08:00",
+    "itens": [
+      {
+        "produto": "Frango Crispy",
+        "quantidade": 1,
+        "extras": [],
+        "remocoes": ["Molho honey mustard"],
+        "restricoes": []
+      },
+      {
+        "produto": "Milkshake Artesanal",
+        "quantidade": 1,
+        "extras": ["Chantilly"],
+        "remocoes": [],
+        "restricoes": ["vegetariano"]
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "senha": "#418",
+    "status": "pronto",
+    "horario": "2026-05-10T12:10:00",
+    "itens": [
+      {
+        "produto": "Wrap Fit",
+        "quantidade": 1,
+        "extras": ["Cream cheese light"],
+        "remocoes": [],
+        "restricoes": ["sem-gluten"]
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "senha": "#523",
+    "status": "finalizado",
+    "horario": "2026-05-10T11:45:00",
+    "itens": [
+      {
+        "produto": "Brownie com Sorvete",
+        "quantidade": 2,
+        "extras": ["Calda de chocolate"],
+        "remocoes": [],
+        "restricoes": ["vegetariano"]
+      }
+    ]
+  }
+]

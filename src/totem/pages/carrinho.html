@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho — Prontus</title>
+  <link rel="stylesheet" href="/src/shared/css/variables.css">
+  <link rel="stylesheet" href="/src/shared/css/reset.css">
+  <link rel="stylesheet" href="/src/shared/css/components.css">
+  <link rel="stylesheet" href="/src/totem/assets/css/totem.css">
+</head>
+<body>
+
+  <header class="totem-header">
+    <a href="/src/totem/pages/index.html" class="totem-logo">
+      <div class="totem-logo-icon">🍽️</div>
+      <div>
+        <div class="totem-logo-name">Prontus</div>
+        <div class="totem-logo-sub">Seu pedido</div>
+      </div>
+    </a>
+  </header>
+
+  <div class="totem-container" style="max-width:800px;margin:0 auto">
+
+    <div style="margin-bottom:var(--space-6)">
+      <a href="/src/totem/pages/index.html" class="btn-back">← Continuar comprando</a>
+    </div>
+
+    <h1 style="font-size:var(--text-2xl);font-weight:var(--font-bold);margin-bottom:var(--space-6)">
+      🛒 Seu pedido
+    </h1>
+
+    <!-- Carrinho vazio -->
+    <div id="carrinhoVazio" class="cart-empty hidden">
+      <div class="cart-empty-icon">🛒</div>
+      <h2 style="margin-bottom:var(--space-3)">Seu carrinho está vazio</h2>
+      <p style="color:var(--color-text-muted);margin-bottom:var(--space-6)">
+        Adicione itens do cardápio para continuar.
+      </p>
+      <a href="/src/totem/pages/index.html" class="btn btn-primary btn-lg">Ver cardápio</a>
+    </div>
+
+    <!-- Itens -->
+    <div id="carrinhoItens">
+      <div class="cart-items" id="itensList"></div>
+
+      <!-- Resumo -->
+      <div class="cart-summary">
+        <div class="cart-summary-row">
+          <span>Subtotal</span>
+          <span id="summarySubtotal">R$ 0,00</span>
+        </div>
+        <div class="cart-summary-row">
+          <span>Taxa de serviço</span>
+          <span style="color:var(--color-success)">Grátis</span>
+        </div>
+        <div class="cart-summary-row" style="padding-top:var(--space-4)">
+          <span style="font-size:var(--text-lg);font-weight:var(--font-semibold)">Total</span>
+          <span class="cart-summary-total" id="summaryTotal">R$ 0,00</span>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-5)">
+          <a href="/src/totem/pages/pagamento.html" class="btn btn-primary btn-full btn-lg">
+            Finalizar pedido →
+          </a>
+          <a href="/src/totem/pages/index.html" class="btn btn-ghost btn-full">
+            Adicionar mais itens
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { formatCurrency, restricaoLabel } from '/src/shared/js/utils.js';
+    import { getCarrinho, removerItem, calcularTotal, calcularSubtotal } from '/src/totem/assets/js/carrinho.js';
+
+    function render() {
+      const carrinho = getCarrinho();
+      const vazio    = document.getElementById('carrinhoVazio');
+      const content  = document.getElementById('carrinhoItens');
+      const list     = document.getElementById('itensList');
+
+      if (!carrinho.length) {
+        vazio.classList.remove('hidden');
+        content.classList.add('hidden');
+        return;
+      }
+
+      vazio.classList.add('hidden');
+      content.classList.remove('hidden');
+
+      const icons = { 1: '🍔', 2: '🥤', 3: '🍨', 4: '🍟' };
+
+      list.innerHTML = carrinho.map((item, idx) => {
+        const detalhes = [];
+        if (item.extras?.length) {
+          detalhes.push(`+ ${item.extras.map(e => `${e.nome}${e.quantidade > 1 ? ` (×${e.quantidade})` : ''}`).join(', ')}`);
+        }
+        if (item.remocoes?.length) {
+          detalhes.push(`Sem: ${item.remocoes.join(', ')}`);
+        }
+        const restricoesHtml = (item.restricoes || []).map(r =>
+          `<span class="tag-restricao ${r}">${restricaoLabel(r)}</span>`
+        ).join(' ');
+
+        return `
+          <div class="cart-item">
+            <div class="cart-item-icon">${icons[1] ?? '🍽️'}</div>
+            <div class="cart-item-info">
+              <div class="cart-item-nome">${item.quantidade}× ${item.nome}</div>
+              ${detalhes.length ? `<div class="cart-item-detalhes">${detalhes.join(' · ')}</div>` : ''}
+              ${restricoesHtml ? `<div style="margin-bottom:8px">${restricoesHtml}</div>` : ''}
+              <div class="cart-item-actions">
+                <span class="cart-item-price">${formatCurrency(calcularSubtotal(item))}</span>
+                <div class="cart-item-btns">
+                  <button class="btn-cart-action btn-editar" data-idx="${idx}">✏️ Editar</button>
+                  <button class="btn-cart-action btn-remover" data-idx="${idx}">🗑️ Remover</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const total = calcularTotal();
+      document.getElementById('summarySubtotal').textContent = formatCurrency(total);
+      document.getElementById('summaryTotal').textContent    = formatCurrency(total);
+
+      /* Editar */
+      list.querySelectorAll('.btn-editar').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = btn.dataset.idx;
+          const item = carrinho[idx];
+          window.location.href = `/src/totem/pages/produto.html?id=${item.produtoId}&editar=${idx}`;
+        });
+      });
+
+      /* Remover */
+      list.querySelectorAll('.btn-remover').forEach(btn => {
+        btn.addEventListener('click', () => {
+          removerItem(Number(btn.dataset.idx));
+          render();
+        });
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
