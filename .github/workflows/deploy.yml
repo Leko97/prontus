@@ -13,15 +13,19 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
+      - name: Preparar chave SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd /var/www/prontus
-            git pull origin main
-            chown -R www-data:www-data /var/www/prontus
-            chmod -R 755 /var/www/prontus
-            echo "Deploy concluído em $(date)"
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            cd /var/www/prontus &&
+            git pull origin main &&
+            chown -R www-data:www-data /var/www/prontus &&
+            chmod -R 755 /var/www/prontus &&
+            echo 'Deploy concluído em \$(date)'
+          "
