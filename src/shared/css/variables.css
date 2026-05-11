@@ -1,0 +1,94 @@
+:root {
+  /* Cores */
+  --color-primary: #FF6B35;
+  --color-primary-dark: #e55a26;
+  --color-secondary: #2D3047;
+  --color-secondary-dark: #1e2030;
+  --color-bg: #F8F4F0;
+  --color-surface: #ffffff;
+
+  --color-success: #27AE60;
+  --color-warning: #F39C12;
+  --color-danger: #E74C3C;
+  --color-info: #3498DB;
+
+  --color-success-bg: #eafaf1;
+  --color-warning-bg: #fef9e7;
+  --color-danger-bg: #fdedec;
+  --color-info-bg: #eaf4fb;
+
+  --color-text: #1A1A2E;
+  --color-text-muted: #6C757D;
+  --color-text-inverse: #ffffff;
+
+  --color-border: #DEE2E6;
+  --color-border-focus: #FF6B35;
+
+  /* Tipografia */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.25rem;
+  --text-xl:   1.5rem;
+  --text-2xl:  2rem;
+  --text-3xl:  3rem;
+  --text-4xl:  4rem;
+
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  /* Espaçamento (base 4px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Bordas */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
+
+  /* Transição */
+  --transition: 0.2s ease;
+  --transition-slow: 0.35s ease;
+
+  /* Botões */
+  --btn-height-sm: 40px;
+  --btn-height-md: 56px;
+  --btn-height-lg: 80px;
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --header-height: 64px;
+  --container-max: 1280px;
+
+  /* Z-index */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+}

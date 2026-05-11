@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Prontus — Painel de Senhas</title>
+  <link rel="stylesheet" href="/src/shared/css/variables.css">
+  <link rel="stylesheet" href="/src/shared/css/reset.css">
+  <link rel="stylesheet" href="/src/display/assets/css/display.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="display-header">
+    <div class="display-logo">
+      <div class="display-logo-icon">🍽️</div>
+      <div>
+        <div class="display-logo-name">Prontus</div>
+        <div class="display-logo-sub">Painel de Senhas</div>
+      </div>
+    </div>
+
+    <div class="display-header-right">
+      <div class="connection-status">
+        <div class="conn-dot" id="connDot"></div>
+        <span>ao vivo</span>
+      </div>
+      <div class="display-clock" id="displayClock">00:00</div>
+      <button class="btn-fullscreen" id="btnFullscreen" title="Tela cheia">⛶</button>
+    </div>
+  </header>
+
+  <!-- Board principal -->
+  <div class="display-board">
+
+    <!-- Coluna: Em Preparo -->
+    <div class="display-col em-preparo">
+      <div class="display-col-header">
+        <span class="display-col-title">⏳ Em Preparo</span>
+        <span class="display-col-icon">🔥</span>
+      </div>
+      <div class="display-col-body" id="emPreparoList">
+        <div class="display-col-empty">
+          <div class="display-col-empty-icon">⏳</div>
+          <div class="display-col-empty-text">Nenhum pedido em preparo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coluna: Prontas para Retirada -->
+    <div class="display-col prontas">
+      <div class="display-col-header">
+        <span class="display-col-title">✅ Prontas para Retirada</span>
+        <span class="display-col-icon">🔔</span>
+      </div>
+      <div class="display-col-body" id="prontasList">
+        <div class="display-col-empty">
+          <div class="display-col-empty-icon">✅</div>
+          <div class="display-col-empty-text">Nenhuma senha pronta</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="/src/display/assets/js/display.js"></script>
+</body>
+</html>

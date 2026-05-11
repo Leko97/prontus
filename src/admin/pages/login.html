@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Prontus Admin</title>
+  <link rel="stylesheet" href="/src/shared/css/variables.css">
+  <link rel="stylesheet" href="/src/shared/css/reset.css">
+  <link rel="stylesheet" href="/src/shared/css/components.css">
+  <link rel="stylesheet" href="/src/admin/assets/css/admin.css">
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="login-logo-icon">🍽️</div>
+        <div>
+          <h1>Prontus Admin</h1>
+          <p>Faça login para continuar</p>
+        </div>
+      </div>
+
+      <div id="errorAlert" class="alert alert-danger hidden">
+        ❌ E-mail ou senha incorretos. Tente novamente.
+      </div>
+
+      <form id="loginForm" action="/api/auth/login" method="POST" novalidate>
+        <input type="hidden" name="redirect" value="/src/admin/pages/dashboard.html">
+
+        <div class="form-group">
+          <label class="form-label" for="email">E-mail <span class="required">*</span></label>
+          <input type="email" id="email" name="email" class="form-control"
+            placeholder="admin@prontus.app" autocomplete="email" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="senha">Senha <span class="required">*</span></label>
+          <input type="password" id="senha" name="senha" class="form-control"
+            placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="btnLogin">
+          Entrar
+        </button>
+      </form>
+
+      <p style="text-align:center;margin-top:24px;font-size:var(--text-xs);color:var(--color-text-muted)">
+        Prontus v1 · Sistema de Gestão de Pedidos
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    /* Exibir erro via query param ?erro=1 */
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('erro')) {
+      document.getElementById('errorAlert').classList.remove('hidden');
+    }
+
+    /* Em modo mock: simular login direto */
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnLogin');
+      btn.disabled = true;
+      btn.textContent = 'Entrando…';
+      setTimeout(() => {
+        window.location.href = '/src/admin/pages/dashboard.html';
+      }, 600);
+    });
+  </script>
+</body>
+</html>
