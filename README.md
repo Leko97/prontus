@@ -38,6 +38,104 @@ prontus/
 
 ---
 
+## Diagrama do Banco de Dados
+
+```mermaid
+erDiagram
+      CATEGORIAS {
+          int id PK
+          varchar nome
+          varchar icone
+          tinyint ativo
+          datetime criado_em
+      }
+      RESTRICOES {
+          int id PK
+          varchar slug
+          varchar nome
+          varchar cor
+          tinyint ativo
+      }
+      PRODUTOS {
+          int id PK
+          int categoria_id FK
+          varchar nome
+          text descricao
+          decimal preco
+          varchar imagem
+          tinyint ativo
+          datetime criado_em
+      }
+      PRODUTO_RESTRICOES {
+          int produto_id FK
+          varchar restricao_slug FK
+      }
+      ADICIONAIS {
+          int id PK
+          int produto_id FK
+          varchar nome
+          decimal preco
+          tinyint ativo
+      }
+      REMOCOES {
+          int id PK
+          int produto_id FK
+          varchar nome
+      }
+      PEDIDOS {
+          int id PK
+          varchar senha
+          enum status
+          varchar pagamento
+          decimal total
+          datetime horario
+          datetime preparado_em
+      }
+      PEDIDO_ITENS {
+          int id PK
+          int pedido_id FK
+          int produto_id
+          varchar produto_nome
+          decimal preco_unitario
+          int quantidade
+      }
+      PEDIDO_ITEM_EXTRAS {
+          int id PK
+          int pedido_item_id FK
+          varchar nome
+      }
+      PEDIDO_ITEM_REMOCOES {
+          int id PK
+          int pedido_item_id FK
+          varchar nome
+      }
+      PEDIDO_ITEM_RESTRICOES {
+          int id PK
+          int pedido_item_id FK
+          varchar restricao_slug
+      }
+      USUARIOS {
+          int id PK
+          varchar nome
+          varchar email
+          varchar senha_hash
+          enum perfil
+          tinyint ativo
+      }
+
+      CATEGORIAS ||--o{ PRODUTOS : "tem"
+      PRODUTOS ||--o{ ADICIONAIS : "tem"
+      PRODUTOS ||--o{ REMOCOES : "permite remover"
+      PRODUTOS ||--o{ PRODUTO_RESTRICOES : "possui"
+      RESTRICOES ||--o{ PRODUTO_RESTRICOES : "categoriza"
+      PEDIDOS ||--o{ PEDIDO_ITENS : "contém"
+      PEDIDO_ITENS ||--o{ PEDIDO_ITEM_EXTRAS : "extras"
+      PEDIDO_ITENS ||--o{ PEDIDO_ITEM_REMOCOES : "remocoes"
+      PEDIDO_ITENS ||--o{ PEDIDO_ITEM_RESTRICOES : "restricoes"
+```
+
+---
+
 ## Módulos
 
 ### Totem (Cliente)
