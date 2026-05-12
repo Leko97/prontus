@@ -16,7 +16,7 @@ $rows = $pdo->query(
 )->fetchAll();
 
 $stmtRest  = $pdo->prepare('SELECT restricao_slug FROM produto_restricoes WHERE produto_id = ?');
-$stmtExtra = $pdo->prepare('SELECT id, nome, preco FROM adicionais WHERE produto_id = ? ORDER BY id');
+$stmtExtra = $pdo->prepare('SELECT id, nome, preco FROM adicionais WHERE produto_id = ? AND ativo = 1 ORDER BY id');
 $stmtRem   = $pdo->prepare('SELECT nome FROM remocoes WHERE produto_id = ? ORDER BY id');
 
 $prods = [];

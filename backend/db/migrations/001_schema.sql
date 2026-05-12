@@ -39,6 +39,7 @@ CREATE TABLE adicionais (
   produto_id INT           NOT NULL,
   nome       VARCHAR(100)  NOT NULL,
   preco      DECIMAL(10,2) NOT NULL DEFAULT 0,
+  ativo      TINYINT(1)    NOT NULL DEFAULT 1,
   FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

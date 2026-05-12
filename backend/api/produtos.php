@@ -15,7 +15,7 @@ function buscar_produto_completo(PDO $pdo, int $id): array {
     $stmtRest->execute([$id]);
     $restricoes = array_column($stmtRest->fetchAll(), 'restricao_slug');
 
-    $stmtExtra = $pdo->prepare('SELECT id, nome, preco FROM adicionais WHERE produto_id = ? ORDER BY id');
+    $stmtExtra = $pdo->prepare('SELECT id, nome, preco FROM adicionais WHERE produto_id = ? AND ativo = 1 ORDER BY id');
     $stmtExtra->execute([$id]);
     $extras = array_map(fn($e) => [
         'id'    => (int)$e['id'],

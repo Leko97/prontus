@@ -59,11 +59,12 @@ export function calcularTotal() {
 }
 
 export function calcularSubtotal(item) {
+  const precoBase = parseFloat(item.precoBase ?? item.preco) || 0;
   const somatorioExtras = (item.extras || []).reduce(
-    (acc, e) => acc + e.preco * (e.quantidade || 1),
+    (acc, e) => acc + (parseFloat(e.preco) || 0) * (e.quantidade || 1),
     0
   );
-  return (item.precoBase + somatorioExtras) * item.quantidade;
+  return (precoBase + somatorioExtras) * (item.quantidade || 1);
 }
 
 export function totalItens() {
