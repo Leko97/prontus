@@ -276,9 +276,9 @@
     function atualizarTotal() {
       if (!produto) return;
       const somatorioExtras = (produto.extras || []).reduce((acc, e) => {
-        return acc + e.preco * (extrasQtd[e.id] || 0);
+        return acc + (parseFloat(e.preco) || 0) * (extrasQtd[e.id] || 0);
       }, 0);
-      const total = (produto.preco + somatorioExtras) * quantidade;
+      const total = ((parseFloat(produto.preco) || 0) + somatorioExtras) * quantidade;
       document.getElementById('totalRealtime').textContent = formatCurrency(total);
     }
 

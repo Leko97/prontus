@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
-require_once __DIR__ . '/produtos.php';
+require_once __DIR__ . '/_produto_helpers.php';
 
 $pdo    = get_pdo();
 $method = $_SERVER['REQUEST_METHOD'];
