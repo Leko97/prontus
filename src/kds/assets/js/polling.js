@@ -2,13 +2,12 @@ import { getPedidos } from '/src/shared/js/api.js';
 
 let intervalId   = null;
 let ultimoHash   = null;
+let emAndamento  = false;
 
-/**
- * Inicia polling de pedidos.
- * Só chama `callback` quando os dados mudarem (comparação por hash).
- */
-export function iniciarPolling(callback, intervalMs = 2000) {
+export function iniciarPolling(callback, intervalMs = 2000, onErro = null) {
   async function tick() {
+    if (emAndamento) return;
+    emAndamento = true;
     try {
       const pedidos = await getPedidos();
       const hash    = JSON.stringify(pedidos);
@@ -19,10 +18,13 @@ export function iniciarPolling(callback, intervalMs = 2000) {
       }
     } catch (err) {
       console.warn('[polling] Erro ao buscar pedidos:', err.message);
+      if (onErro) onErro(err);
+    } finally {
+      emAndamento = false;
     }
   }
 
-  tick(); // primeira chamada imediata
+  tick();
   intervalId = setInterval(tick, intervalMs);
   return intervalId;
 }
@@ -32,5 +34,6 @@ export function pararPolling() {
     clearInterval(intervalId);
     intervalId = null;
     ultimoHash = null;
+    emAndamento = false;
   }
 }

@@ -49,9 +49,11 @@
     const params = new URLSearchParams(window.location.search);
     if (params.get('erro')) {
       document.getElementById('errorAlert').classList.remove('hidden');
+      const btn = document.getElementById('btnEntrar');
+      btn.disabled = false;
+      btn.textContent = 'Entrar no painel';
     }
 
-    /* Feedback visual ao submeter */
     document.getElementById('loginForm').addEventListener('submit', () => {
       const btn = document.getElementById('btnEntrar');
       btn.disabled = true;

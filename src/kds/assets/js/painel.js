@@ -1,22 +1,32 @@
-import { atualizarStatusPedido } from '/src/shared/js/api.js';
+import { atualizarStatusPedido, checkAuth, logout } from '/src/shared/js/api.js';
 import { formatTime, formatElapsed, minutesAgo, proximoStatus, btnAvancarLabel, restricaoLabel } from '/src/shared/js/utils.js';
 import { iniciarPolling } from './polling.js';
 
 const COLUNAS = ['recebido', 'em-preparo', 'pronto'];
-
-/* Estado local de pedidos para simular avanço de status no modo mock */
 let pedidosLocal = [];
 
 /* -------- Init -------- */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const { logado } = await checkAuth();
+    if (!logado) { window.location.href = '/src/kds/pages/login.php'; return; }
+  } catch {
+    window.location.href = '/src/kds/pages/login.php';
+    return;
+  }
+
   atualizarRelogio();
   setInterval(atualizarRelogio, 1000);
-  setInterval(atualizarTempos, 30000); // atualiza "há X min" a cada 30s
+  setInterval(atualizarTempos, 30000);
 
-  iniciarPolling(onNovosDados, 2000);
+  iniciarPolling(onNovosDados, 2000, () => setConexao(false));
 
-  document.getElementById('btnLogout')?.addEventListener('click', () => {
-    window.location.href = '/src/kds/pages/login.php';
+  document.getElementById('btnLogout')?.addEventListener('click', async () => {
+    try {
+      await logout();
+    } finally {
+      window.location.href = '/src/kds/pages/login.php';
+    }
   });
 });
 

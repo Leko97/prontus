@@ -10,7 +10,7 @@ if ($method === 'GET') {
         'SELECT a.id, a.nome, a.preco, a.produto_id as produtoId, p.nome as produtoNome
          FROM adicionais a
          JOIN produtos p ON a.produto_id = p.id
-         WHERE p.ativo = 1
+         WHERE a.ativo = 1 AND p.ativo = 1
          ORDER BY a.produto_id, a.id'
     )->fetchAll();
 
@@ -56,6 +56,12 @@ if ($method === 'PUT') {
     $id   = (int)$routeParams['id'];
     $data = input_json();
 
+    if (empty($data['nome'])) error_response('Campo "nome" obrigatório');
+
+    $check = $pdo->prepare('SELECT id FROM adicionais WHERE id = ? AND ativo = 1');
+    $check->execute([$id]);
+    if (!$check->fetch()) error_response('Adicional não encontrado', 404);
+
     $stmt = $pdo->prepare('UPDATE adicionais SET nome = ?, preco = ? WHERE id = ?');
     $stmt->execute([$data['nome'], (float)($data['preco'] ?? 0), $id]);
 
@@ -78,7 +84,7 @@ if ($method === 'PUT') {
 if ($method === 'DELETE') {
     require_admin();
     $id = (int)$routeParams['id'];
-    $pdo->prepare('DELETE FROM adicionais WHERE id = ?')->execute([$id]);
+    $pdo->prepare('UPDATE adicionais SET ativo = 0 WHERE id = ?')->execute([$id]);
     json_response(['ok' => true]);
 }
 

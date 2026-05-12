@@ -43,13 +43,14 @@
   </div>
 
   <script type="module">
-    /* Exibir erro via query param ?erro=1 */
     const params = new URLSearchParams(window.location.search);
     if (params.get('erro')) {
       document.getElementById('errorAlert').classList.remove('hidden');
+      const btn = document.getElementById('btnLogin');
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
     }
 
-    /* Feedback visual ao submeter */
     document.getElementById('loginForm').addEventListener('submit', () => {
       const btn = document.getElementById('btnLogin');
       btn.disabled = true;

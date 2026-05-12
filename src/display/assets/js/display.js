@@ -28,7 +28,11 @@ function atualizarRelogio() {
 
 /* -------- Polling -------- */
 function iniciarPolling() {
+  let emAndamento = false;
+
   async function tick() {
+    if (emAndamento) return;
+    emAndamento = true;
     try {
       const senhas = await getSenhas();
       setConexao(true);
@@ -42,6 +46,8 @@ function iniciarPolling() {
     } catch (err) {
       console.warn('[display] Erro no polling:', err.message);
       setConexao(false);
+    } finally {
+      emAndamento = false;
     }
   }
 

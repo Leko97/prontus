@@ -121,5 +121,8 @@ async function loadUltimosPedidos() {
   }
 }
 
-loadMetricas();
-loadUltimosPedidos();
+try {
+  await Promise.all([loadMetricas(), loadUltimosPedidos()]);
+} catch (err) {
+  console.error('[dashboard] Erro na inicialização:', err);
+}

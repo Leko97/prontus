@@ -100,38 +100,46 @@ if ($method === 'POST') {
         ];
     }
 
-    $stmtPedido = $pdo->prepare(
-        'INSERT INTO pedidos (senha, status, pagamento, total) VALUES (?, ?, ?, ?)'
-    );
-    $stmtPedido->execute([$senha, 'recebido', $data['pagamento'] ?? null, $total]);
-    $pedidoId = (int)$pdo->lastInsertId();
-
-    foreach ($itensPreparados as $item) {
-        $stmtItem = $pdo->prepare(
-            'INSERT INTO pedido_itens (pedido_id, produto_id, produto_nome, preco_unitario, quantidade)
-             VALUES (?, ?, ?, ?, ?)'
+    $pdo->beginTransaction();
+    try {
+        $stmtPedido = $pdo->prepare(
+            'INSERT INTO pedidos (senha, status, pagamento, total) VALUES (?, ?, ?, ?)'
         );
-        $stmtItem->execute([
-            $pedidoId,
-            $item['produto_id'],
-            $item['produto_nome'],
-            $item['preco_unitario'],
-            $item['quantidade'],
-        ]);
-        $itemId = (int)$pdo->lastInsertId();
+        $stmtPedido->execute([$senha, 'recebido', $data['pagamento'] ?? null, $total]);
+        $pedidoId = (int)$pdo->lastInsertId();
 
-        foreach ($item['extras'] as $nome) {
-            $pdo->prepare('INSERT INTO pedido_item_extras (pedido_item_id, nome) VALUES (?, ?)')
-                ->execute([$itemId, $nome]);
+        foreach ($itensPreparados as $item) {
+            $stmtItem = $pdo->prepare(
+                'INSERT INTO pedido_itens (pedido_id, produto_id, produto_nome, preco_unitario, quantidade)
+                 VALUES (?, ?, ?, ?, ?)'
+            );
+            $stmtItem->execute([
+                $pedidoId,
+                $item['produto_id'],
+                $item['produto_nome'],
+                $item['preco_unitario'],
+                $item['quantidade'],
+            ]);
+            $itemId = (int)$pdo->lastInsertId();
+
+            foreach ($item['extras'] as $nome) {
+                $pdo->prepare('INSERT INTO pedido_item_extras (pedido_item_id, nome) VALUES (?, ?)')
+                    ->execute([$itemId, $nome]);
+            }
+            foreach ($item['remocoes'] as $nome) {
+                $pdo->prepare('INSERT INTO pedido_item_remocoes (pedido_item_id, nome) VALUES (?, ?)')
+                    ->execute([$itemId, $nome]);
+            }
+            foreach ($item['restricoes'] as $slug) {
+                $pdo->prepare('INSERT INTO pedido_item_restricoes (pedido_item_id, restricao_slug) VALUES (?, ?)')
+                    ->execute([$itemId, $slug]);
+            }
         }
-        foreach ($item['remocoes'] as $nome) {
-            $pdo->prepare('INSERT INTO pedido_item_remocoes (pedido_item_id, nome) VALUES (?, ?)')
-                ->execute([$itemId, $nome]);
-        }
-        foreach ($item['restricoes'] as $slug) {
-            $pdo->prepare('INSERT INTO pedido_item_restricoes (pedido_item_id, restricao_slug) VALUES (?, ?)')
-                ->execute([$itemId, $slug]);
-        }
+
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        error_response('Erro ao registrar pedido', 500);
     }
 
     $pedidoRow = $pdo->prepare(

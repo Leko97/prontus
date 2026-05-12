@@ -3,6 +3,7 @@ import { formatCurrency } from '/src/shared/js/utils.js';
 import { getCarrinho, calcularTotal, limparCarrinho } from './carrinho.js';
 
 let metodoPagamento = null;
+let processando = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   /* Total */
@@ -42,7 +43,8 @@ function mostrarInstrucao(metodo) {
 }
 
 async function confirmarPagamento() {
-  if (!metodoPagamento) return;
+  if (!metodoPagamento || processando) return;
+  processando = true;
 
   const btn = document.getElementById('btnConfirmar');
   btn.disabled = true;
@@ -55,25 +57,27 @@ async function confirmarPagamento() {
     const carrinho = getCarrinho();
     const payload  = {
       itens: carrinho.map(item => ({
-        produto:    item.nome,
+        produtoId:  item.produtoId,
         quantidade: item.quantidade,
         extras:     (item.extras || []).filter(e => (e.quantidade || 1) > 0).map(e => e.nome),
         remocoes:   item.remocoes || [],
         restricoes: item.restricoes || [],
       })),
-      metodoPagamento,
+      pagamento: metodoPagamento,
       total: calcularTotal(),
     };
 
     const resultado = await criarPedido(payload);
 
+    if (!resultado?.senha) throw new Error('Resposta inválida: campo "senha" ausente');
+
     limparCarrinho();
     window.location.href = `/src/totem/pages/senha.php?senha=${encodeURIComponent(resultado.senha)}`;
   } catch (err) {
     console.error(err);
-
     if (alertEl) alertEl.classList.remove('hidden');
     btn.disabled = false;
     btn.textContent = 'Confirmar pagamento';
+    processando = false;
   }
 }

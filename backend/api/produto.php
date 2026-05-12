@@ -17,6 +17,11 @@ if ($method === 'PUT') {
     require_admin();
     $data = input_json();
 
+    if (empty($data['nome']) || strlen($data['nome']) > 200)
+        error_response('Campo "nome" inválido ou ausente');
+    if (!isset($data['preco']) || !is_numeric($data['preco']) || (float)$data['preco'] < 0)
+        error_response('Campo "preco" inválido ou ausente');
+
     $check = $pdo->prepare('SELECT id FROM produtos WHERE id = ? AND ativo = 1');
     $check->execute([$id]);
     if (!$check->fetch()) error_response('Produto não encontrado', 404);

@@ -30,7 +30,12 @@ function require_admin(): array {
 }
 
 function cors_headers(): void {
-    header('Access-Control-Allow-Origin: *');
+    $origem = $_SERVER['HTTP_ORIGIN'] ?? '';
+    $permitidas = ['http://159.223.165.79:8080', 'http://localhost:8080'];
+    if (in_array($origem, $permitidas, true)) {
+        header("Access-Control-Allow-Origin: {$origem}");
+    }
     header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type');
+    header('Access-Control-Allow-Credentials: true');
 }
