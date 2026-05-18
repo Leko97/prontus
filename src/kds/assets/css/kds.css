@@ -195,6 +195,9 @@ body {
   overflow: hidden;
   transition: transform var(--transition), box-shadow var(--transition);
   animation: cardEntrada 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 130px);
 }
 
 @keyframes cardEntrada {
@@ -252,7 +255,13 @@ body {
 
 .pedido-card-body {
   padding: var(--space-3) var(--space-4);
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
+
+.pedido-card-body::-webkit-scrollbar { width: 3px; }
+.pedido-card-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
 
 .pedido-itens {
   display: flex;
