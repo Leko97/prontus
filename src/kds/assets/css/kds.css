@@ -222,8 +222,28 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.pedido-header-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pedido-header-info .pedido-meta {
+  align-items: flex-start;
+}
+
+.pedido-card .btn-avancar {
+  height: 34px;
+  padding: 0 var(--space-3);
+  font-size: 11px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .pedido-senha {
@@ -309,11 +329,6 @@ body {
   border-color: var(--color-warning);
   color: #f8c76a;
   font-size: 10px;
-}
-
-.pedido-card-footer {
-  padding: var(--space-3) var(--space-4);
-  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
 /* ===== BOTÕES DE AÇÃO DO KDS ===== */

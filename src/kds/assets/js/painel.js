@@ -125,25 +125,24 @@ function renderCard(pedido) {
   return `
     <div class="pedido-card ${atrasado ? 'atrasado' : ''}" data-id="${pedido.id}">
       <div class="pedido-card-header">
-        <span class="pedido-senha">${pedido.senha}</span>
-        <div class="pedido-meta">
-          <span class="pedido-hora">${formatTime(pedido.horario)}</span>
-          <span class="pedido-elapsed ${mins >= 10 ? 'urgente' : ''}">${elapsed}</span>
+        <div class="pedido-header-info">
+          <span class="pedido-senha">${pedido.senha}</span>
+          <div class="pedido-meta">
+            <span class="pedido-hora">${formatTime(pedido.horario)}</span>
+            <span class="pedido-elapsed ${mins >= 10 ? 'urgente' : ''}">${elapsed}</span>
+          </div>
         </div>
-      </div>
-
-      <div class="pedido-card-body">
-        ${restricoesHtml ? `<div class="pedido-restricoes">${restricoesHtml}</div>` : ''}
-        <div class="pedido-itens">${itensHtml}</div>
-      </div>
-
-      <div class="pedido-card-footer">
         <button class="btn-avancar ${pedido.status}"
           data-id="${pedido.id}"
           data-status="${pedido.status}"
           ${!proximo && pedido.status !== 'pronto' ? 'disabled' : ''}>
           ${btnLabel}
         </button>
+      </div>
+
+      <div class="pedido-card-body">
+        ${restricoesHtml ? `<div class="pedido-restricoes">${restricoesHtml}</div>` : ''}
+        <div class="pedido-itens">${itensHtml}</div>
       </div>
     </div>
   `;
