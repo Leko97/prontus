@@ -20,9 +20,12 @@ const NAV_LINKS = [
   { href: '/src/admin/pages/produtos.php',     icon: '🍔', label: 'Produtos' },
   { href: '/src/admin/pages/categorias.php',   icon: '🗂️',  label: 'Categorias' },
   { href: '/src/admin/pages/adicionais.php',   icon: '➕', label: 'Adicionais' },
+  { href: '/src/admin/pages/remocoes.php',     icon: '✂️', label: 'Remoções' },
   { href: '/src/admin/pages/restricoes.php',   icon: '⚠️',  label: 'Restrições' },
   { href: '/src/admin/pages/usuarios.php',     icon: '👥', label: 'Usuários' },
   { href: '/src/admin/pages/pedidos.php',      icon: '📋', label: 'Pedidos' },
+  { href: '/src/admin/pages/relatorios.php',   icon: '📈', label: 'Relatórios' },
+  { href: '/src/admin/pages/configuracoes.php',icon: '⚙️', label: 'Configurações' },
 ];
 
 export function renderSidebar(containerSelector = '#sidebar') {

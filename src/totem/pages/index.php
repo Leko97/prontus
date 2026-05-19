@@ -79,5 +79,17 @@
   </div>
 
   <script type="module" src="/src/totem/assets/js/cardapio.js"></script>
+  <script type="module">
+    import { getConfiguracoes } from '/src/shared/js/api.js';
+    import { iniciarIdleTimer } from '/src/totem/assets/js/idle-timer.js';
+
+    try {
+      const config = await getConfiguracoes();
+      const segundos = parseInt(config.totem_idle_segundos, 10) || 60;
+      iniciarIdleTimer(segundos);
+    } catch {
+      iniciarIdleTimer(60);
+    }
+  </script>
 </body>
 </html>

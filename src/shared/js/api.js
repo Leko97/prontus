@@ -173,6 +173,55 @@ export async function getPedidosHistorico(params = {}) {
   return fetchAPI(`/pedidos/historico${qs ? '?' + qs : ''}`);
 }
 
+/* -------- Configurações -------- */
+
+export async function getConfiguracoes() {
+  return fetchAPI('/configuracoes');
+}
+
+export async function salvarConfiguracoes(dados) {
+  return fetchAPI('/configuracoes', { method: 'PUT', body: JSON.stringify(dados) });
+}
+
+/* -------- Remoções -------- */
+
+export async function getRemocoes(produtoId) {
+  return fetchAPI(`/remocoes?produto_id=${produtoId}`);
+}
+
+export async function criarRemocao(dados) {
+  return fetchAPI('/remocoes', { method: 'POST', body: JSON.stringify(dados) });
+}
+
+export async function deletarRemocao(id) {
+  return fetchAPI(`/remocoes/${id}`, { method: 'DELETE' });
+}
+
+/* -------- Upload de imagem -------- */
+
+export async function uploadImagemProduto(produtoId, file) {
+  const form = new FormData();
+  form.append('imagem', file);
+  const res = await fetch(`${API_BASE}/produtos/${produtoId}/imagem`, {
+    method: 'POST',
+    body: form,
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}: upload imagem`);
+  return res.json();
+}
+
+/* -------- Relatórios -------- */
+
+export async function getRelatorio(params = {}) {
+  const qs = new URLSearchParams(params).toString();
+  return fetchAPI(`/relatorios${qs ? '?' + qs : ''}`);
+}
+
+export function getRelatorioCSVUrl(params = {}) {
+  const qs = new URLSearchParams({ ...params, formato: 'csv' }).toString();
+  return `${API_BASE}/relatorios?${qs}`;
+}
+
 /* -------- Auth (mock passthrough) -------- */
 
 export async function checkAuth() {

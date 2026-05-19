@@ -3,7 +3,45 @@ import { formatTime, formatElapsed, minutesAgo, proximoStatus, btnAvancarLabel, 
 import { iniciarPolling } from './polling.js';
 
 const COLUNAS = ['recebido', 'em-preparo', 'pronto'];
-let pedidosLocal = [];
+let pedidosLocal  = [];
+let idsConhecidos = new Set();
+
+/* -------- Som -------- */
+let audioCtx = null;
+let somAtivo = localStorage.getItem('kds_som') !== 'false';
+
+function tocarAlerta() {
+  if (!somAtivo) return;
+  try {
+    audioCtx = audioCtx || new AudioContext();
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.4);
+  } catch (e) {
+    console.warn('[kds] Erro ao tocar alerta:', e);
+  }
+}
+
+function initSomToggle() {
+  const btn = document.getElementById('btnSomToggle');
+  if (!btn) return;
+  btn.textContent = somAtivo ? '🔔 Som: ON' : '🔕 Som: OFF';
+  btn.addEventListener('click', () => {
+    somAtivo = !somAtivo;
+    localStorage.setItem('kds_som', somAtivo ? 'true' : 'false');
+    btn.textContent = somAtivo ? '🔔 Som: ON' : '🔕 Som: OFF';
+    /* Inicializa o AudioContext na primeira interação do usuário */
+    if (somAtivo && !audioCtx) {
+      audioCtx = new AudioContext();
+    }
+  });
+}
 
 /* -------- Init -------- */
 document.addEventListener('DOMContentLoaded', async () => {
@@ -19,6 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setInterval(atualizarRelogio, 1000);
   setInterval(atualizarTempos, 30000);
 
+  initSomToggle();
   iniciarPolling(onNovosDados, 2000, () => setConexao(false));
 
   document.getElementById('btnLogout')?.addEventListener('click', async () => {
@@ -44,10 +83,17 @@ function onNovosDados(pedidos) {
   const statusLocal = {};
   pedidosLocal.forEach(p => { statusLocal[p.id] = p.status; });
 
+  const novosRecebidos = pedidos.filter(
+    p => p.status === 'recebido' && !idsConhecidos.has(p.id)
+  );
+  if (novosRecebidos.length > 0) tocarAlerta();
+
   pedidosLocal = pedidos.map(p => ({
     ...p,
     status: statusLocal[p.id] ?? p.status,
   })).filter(p => p.status !== 'finalizado');
+
+  idsConhecidos = new Set(pedidos.map(p => p.id));
 
   renderTudo();
   atualizarTotalBadge();

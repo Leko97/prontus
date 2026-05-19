@@ -26,6 +26,7 @@
 
     <div class="kds-header-right">
       <span class="kds-total-badge" id="totalBadge">carregando…</span>
+      <button class="btn-kds-som" id="btnSomToggle" title="Ativar/desativar alerta sonoro">🔔 Som: ON</button>
       <button class="btn-kds-logout" id="btnLogout">🚪 Sair</button>
     </div>
   </header>

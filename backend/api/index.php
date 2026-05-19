@@ -45,6 +45,13 @@ $routes = [
     ['POST',   '#^/auth/login$#',             'auth/login.php'],
     ['POST',   '#^/auth/logout$#',            'auth/logout.php'],
     ['GET',    '#^/auth/me$#',                'auth/me.php'],
+    ['GET',    '#^/configuracoes$#',          'configuracoes.php'],
+    ['PUT',    '#^/configuracoes$#',          'configuracoes.php'],
+    ['GET',    '#^/remocoes$#',               'remocoes.php'],
+    ['POST',   '#^/remocoes$#',               'remocoes.php'],
+    ['DELETE', '#^/remocoes/(\d+)$#',         'remocoes.php',  ['id']],
+    ['POST',   '#^/produtos/(\d+)/imagem$#',  'produto.php',   ['id']],
+    ['GET',    '#^/relatorios$#',             'relatorios.php'],
 ];
 
 foreach ($routes as $route) {

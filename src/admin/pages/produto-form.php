@@ -88,10 +88,34 @@
           </div>
 
           <!-- Remoções -->
-          <div class="form-card" style="margin-bottom:var(--space-6)">
+          <div class="form-card" style="margin-bottom:var(--space-5)">
             <h3 class="form-section-title">Ingredientes removíveis</h3>
             <div class="dynamic-list" id="remocoesList"></div>
             <button type="button" class="btn btn-ghost btn-sm" id="btnAddRemocao">+ Adicionar ingrediente</button>
+          </div>
+
+          <!-- Imagem -->
+          <div class="form-card" style="margin-bottom:var(--space-6)">
+            <h3 class="form-section-title">Foto do Produto</h3>
+            <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+              <div id="imagemPreviewWrapper"
+                style="width:120px;height:120px;border-radius:12px;background:#f5f5f5;border:2px dashed var(--color-border);
+                       display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
+                <img id="imagemPreview" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none">
+                <span id="imagemPlaceholder" style="font-size:32px">🖼️</span>
+              </div>
+              <div style="flex:1">
+                <label class="form-label">Foto</label>
+                <input type="file" id="inputImagem" accept="image/jpeg,image/png,image/webp" style="display:none">
+                <button type="button" class="btn btn-ghost btn-sm" id="btnTrocarFoto">
+                  📷 Selecionar foto
+                </button>
+                <p style="color:var(--color-text-muted);font-size:var(--text-xs);margin-top:8px">
+                  JPG, PNG ou WebP — máximo 2MB. A imagem será redimensionada para 800×800px.
+                </p>
+                <div id="uploadStatus" style="display:none;font-size:var(--text-xs);margin-top:4px"></div>
+              </div>
+            </div>
           </div>
 
           <div style="display:flex;gap:12px">
@@ -105,7 +129,7 @@
   </div>
 
   <script type="module">
-    import { getProdutoById, getCategorias, salvarProduto } from '/src/shared/js/api.js';
+    import { getProdutoById, getCategorias, salvarProduto, uploadImagemProduto } from '/src/shared/js/api.js';
     import { getParam } from '/src/shared/js/utils.js';
     import { initAdminPage, showToast } from '/src/admin/assets/js/admin.js';
 
@@ -168,7 +192,30 @@
       document.getElementById('remocoesList').appendChild(createRemocaoRow());
     });
 
-    /* Pré-preencher se edição */
+    /* -------- Upload de imagem -------- */
+    let arquivoImagem = null;
+
+    function mostrarPreviewImagem(src) {
+      const img = document.getElementById('imagemPreview');
+      const placeholder = document.getElementById('imagemPlaceholder');
+      img.src = src;
+      img.style.display = 'block';
+      if (placeholder) placeholder.style.display = 'none';
+    }
+
+    document.getElementById('btnTrocarFoto').addEventListener('click', () => {
+      document.getElementById('inputImagem').click();
+    });
+
+    document.getElementById('inputImagem').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      arquivoImagem = file;
+      const url = URL.createObjectURL(file);
+      mostrarPreviewImagem(url);
+    });
+
+    /* -------- Pré-preencher se edição -------- */
     if (isEdit) {
       try {
         const p = await getProdutoById(produtoId);
@@ -190,6 +237,10 @@
         (p.remocoes || []).forEach(r => {
           document.getElementById('remocoesList').appendChild(createRemocaoRow(r));
         });
+
+        /* Preview da imagem atual */
+        if (p.imagem) mostrarPreviewImagem(p.imagem);
+
       } catch (err) {
         showToast('Erro ao carregar produto.', 'error');
         console.error(err);
@@ -230,7 +281,24 @@
       btn.textContent = 'Salvando…';
 
       try {
-        await salvarProduto(dados);
+        const salvo = await salvarProduto(dados);
+        const idFinal = salvo.id || (isEdit ? Number(produtoId) : null);
+
+        /* Upload de imagem (se houver arquivo selecionado e tiver ID) */
+        if (arquivoImagem && idFinal) {
+          const statusEl = document.getElementById('uploadStatus');
+          statusEl.style.display = 'block';
+          statusEl.textContent = 'Enviando imagem…';
+          try {
+            await uploadImagemProduto(idFinal, arquivoImagem);
+            statusEl.textContent = 'Imagem salva!';
+          } catch (uploadErr) {
+            statusEl.style.color = 'var(--color-danger)';
+            statusEl.textContent = 'Produto salvo, mas erro ao enviar imagem.';
+            console.error(uploadErr);
+          }
+        }
+
         showToast(isEdit ? 'Produto atualizado!' : 'Produto criado!');
         setTimeout(() => window.location.href = '/src/admin/pages/produtos.php', 800);
       } catch (err) {

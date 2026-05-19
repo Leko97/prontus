@@ -65,4 +65,66 @@ if ($method === 'DELETE') {
     json_response(['ok' => true]);
 }
 
+if ($method === 'POST') {
+    require_admin();
+
+    $check = $pdo->prepare('SELECT id FROM produtos WHERE id = ? AND ativo = 1');
+    $check->execute([$id]);
+    if (!$check->fetch()) error_response('Produto não encontrado', 404);
+
+    if (empty($_FILES['imagem'])) {
+        error_response('Nenhum arquivo enviado');
+    }
+
+    $file         = $_FILES['imagem'];
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+    if (!in_array($file['type'], $allowedTypes, true)) {
+        error_response('Tipo não permitido. Use JPG, PNG ou WebP');
+    }
+    if ($file['size'] > 2 * 1024 * 1024) {
+        error_response('Arquivo muito grande. Máximo 2MB');
+    }
+
+    $uploadsDir = dirname(__DIR__, 2) . '/uploads/produtos';
+    if (!is_dir($uploadsDir)) {
+        mkdir($uploadsDir, 0755, true);
+    }
+
+    $src = null;
+    switch ($file['type']) {
+        case 'image/jpeg': $src = @imagecreatefromjpeg($file['tmp_name']); break;
+        case 'image/png':  $src = @imagecreatefrompng($file['tmp_name']); break;
+        case 'image/webp': $src = @imagecreatefromwebp($file['tmp_name']); break;
+    }
+    if (!$src) error_response('Erro ao processar imagem', 500);
+
+    $origW  = imagesx($src);
+    $origH  = imagesy($src);
+    $maxDim = 800;
+
+    if ($origW > $maxDim || $origH > $maxDim) {
+        $ratio = min($maxDim / $origW, $maxDim / $origH);
+        $newW  = (int)round($origW * $ratio);
+        $newH  = (int)round($origH * $ratio);
+        $dst   = imagecreatetruecolor($newW, $newH);
+        imagefill($dst, 0, 0, imagecolorallocate($dst, 255, 255, 255));
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+        imagedestroy($src);
+        $src = $dst;
+    }
+
+    $destPath = $uploadsDir . '/' . $id . '.webp';
+    if (!imagewebp($src, $destPath, 85)) {
+        imagedestroy($src);
+        error_response('Erro ao salvar imagem', 500);
+    }
+    imagedestroy($src);
+
+    $url = '/uploads/produtos/' . $id . '.webp';
+    $pdo->prepare('UPDATE produtos SET imagem = ? WHERE id = ?')->execute([$url, $id]);
+
+    json_response(['url' => $url]);
+}
+
 error_response('Método não permitido', 405);

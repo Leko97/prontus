@@ -94,6 +94,22 @@ body {
   color: rgba(255,255,255,0.8);
 }
 
+.btn-kds-som {
+  height: 36px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.6);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  transition: all var(--transition);
+}
+
+.btn-kds-som:hover {
+  border-color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.9);
+}
+
 .btn-kds-logout {
   height: 36px;
   padding: 0 var(--space-4);
