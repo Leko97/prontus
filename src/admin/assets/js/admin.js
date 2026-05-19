@@ -21,6 +21,8 @@ const NAV_LINKS = [
   { href: '/src/admin/pages/categorias.php',   icon: '🗂️',  label: 'Categorias' },
   { href: '/src/admin/pages/adicionais.php',   icon: '➕', label: 'Adicionais' },
   { href: '/src/admin/pages/restricoes.php',   icon: '⚠️',  label: 'Restrições' },
+  { href: '/src/admin/pages/usuarios.php',     icon: '👥', label: 'Usuários' },
+  { href: '/src/admin/pages/pedidos.php',      icon: '📋', label: 'Pedidos' },
 ];
 
 export function renderSidebar(containerSelector = '#sidebar') {

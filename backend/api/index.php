@@ -18,9 +18,15 @@ $routeParams = [];
 
 $routes = [
     ['GET',    '#^/cardapio$#',               'cardapio.php'],
+    ['GET',    '#^/pedidos/historico$#',        'pedidos_historico.php'],
     ['GET',    '#^/pedidos$#',                'pedidos.php'],
     ['POST',   '#^/pedidos$#',                'pedidos.php'],
     ['PATCH',  '#^/pedidos/(\d+)/status$#',   'pedidos_status.php', ['id']],
+    ['GET',    '#^/usuarios$#',               'usuarios.php'],
+    ['POST',   '#^/usuarios$#',               'usuarios.php'],
+    ['GET',    '#^/usuarios/(\d+)$#',         'usuario.php',  ['id']],
+    ['PUT',    '#^/usuarios/(\d+)$#',         'usuario.php',  ['id']],
+    ['DELETE', '#^/usuarios/(\d+)$#',         'usuario.php',  ['id']],
     ['GET',    '#^/senhas$#',                 'senhas.php'],
     ['GET',    '#^/metricas$#',               'metricas.php'],
     ['GET',    '#^/produtos$#',               'produtos.php'],

@@ -9,6 +9,17 @@ export function formatCurrency(value) {
 }
 
 /**
+ * Formata string ISO 8601 para DD/MM/AAAA HH:MM
+ */
+export function formatDateTime(isoString) {
+  if (!isoString) return '—';
+  return new Date(isoString).toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+}
+
+/**
  * Formata string ISO 8601 para HH:MM
  */
 export function formatTime(isoString) {

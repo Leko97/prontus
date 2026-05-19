@@ -144,6 +144,35 @@ export async function salvarAdicional(dados) {
   return fetchAPI(endpoint, { method, body: JSON.stringify(dados) });
 }
 
+/* -------- Usuários -------- */
+
+export async function getUsuarios() {
+  return fetchAPI('/usuarios');
+}
+
+export async function getUsuarioById(id) {
+  return fetchAPI(`/usuarios/${id}`);
+}
+
+export async function criarUsuario(dados) {
+  return fetchAPI('/usuarios', { method: 'POST', body: JSON.stringify(dados) });
+}
+
+export async function atualizarUsuario(id, dados) {
+  return fetchAPI(`/usuarios/${id}`, { method: 'PUT', body: JSON.stringify(dados) });
+}
+
+export async function deletarUsuario(id) {
+  return fetchAPI(`/usuarios/${id}`, { method: 'DELETE' });
+}
+
+/* -------- Histórico de pedidos -------- */
+
+export async function getPedidosHistorico(params = {}) {
+  const qs = new URLSearchParams(params).toString();
+  return fetchAPI(`/pedidos/historico${qs ? '?' + qs : ''}`);
+}
+
 /* -------- Auth (mock passthrough) -------- */
 
 export async function checkAuth() {

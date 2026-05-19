@@ -1,52 +1,10 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/helpers.php';
+require_once __DIR__ . '/_pedidos_helpers.php';
 
 $pdo    = get_pdo();
 $method = $_SERVER['REQUEST_METHOD'];
-
-function montar_pedido(PDO $pdo, array $pedido): array {
-    $stmtItens = $pdo->prepare(
-        'SELECT id, produto_id, produto_nome, preco_unitario, quantidade
-         FROM pedido_itens WHERE pedido_id = ? ORDER BY id'
-    );
-    $stmtItens->execute([(int)$pedido['id']]);
-    $itensRows = $stmtItens->fetchAll();
-
-    $stmtExtras   = $pdo->prepare('SELECT nome FROM pedido_item_extras WHERE pedido_item_id = ?');
-    $stmtRemocoes = $pdo->prepare('SELECT nome FROM pedido_item_remocoes WHERE pedido_item_id = ?');
-    $stmtRest     = $pdo->prepare('SELECT restricao_slug FROM pedido_item_restricoes WHERE pedido_item_id = ?');
-
-    $itens = [];
-    foreach ($itensRows as $item) {
-        $itemId = (int)$item['id'];
-
-        $stmtExtras->execute([$itemId]);
-        $extras = array_column($stmtExtras->fetchAll(), 'nome');
-
-        $stmtRemocoes->execute([$itemId]);
-        $remocoes = array_column($stmtRemocoes->fetchAll(), 'nome');
-
-        $stmtRest->execute([$itemId]);
-        $restricoes = array_column($stmtRest->fetchAll(), 'restricao_slug');
-
-        $itens[] = [
-            'produto'    => $item['produto_nome'],
-            'quantidade' => (int)$item['quantidade'],
-            'extras'     => $extras,
-            'remocoes'   => $remocoes,
-            'restricoes' => $restricoes,
-        ];
-    }
-
-    return [
-        'id'      => (int)$pedido['id'],
-        'senha'   => $pedido['senha'],
-        'status'  => $pedido['status'],
-        'horario' => $pedido['horario'],
-        'itens'   => $itens,
-    ];
-}
 
 if ($method === 'GET') {
     $stmt = $pdo->query(
