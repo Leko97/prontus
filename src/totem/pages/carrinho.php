@@ -66,7 +66,7 @@
   </div>
 
   <script type="module">
-    import { formatCurrency, restricaoLabel } from '/src/shared/js/utils.js';
+    import { formatCurrency, restricaoLabel, escapeHtml } from '/src/shared/js/utils.js';
     import { getCarrinho, removerItem, calcularTotal, calcularSubtotal } from '/src/totem/assets/js/carrinho.js';
 
     function render() {
@@ -84,15 +84,13 @@
       vazio.classList.add('hidden');
       content.classList.remove('hidden');
 
-      const icons = { 1: '🍔', 2: '🥤', 3: '🍨', 4: '🍟' };
-
       list.innerHTML = carrinho.map((item, idx) => {
         const detalhes = [];
         if (item.extras?.length) {
-          detalhes.push(`+ ${item.extras.map(e => `${e.nome}${e.quantidade > 1 ? ` (×${e.quantidade})` : ''}`).join(', ')}`);
+          detalhes.push(`+ ${item.extras.map(e => `${escapeHtml(e.nome)}${e.quantidade > 1 ? ` (×${e.quantidade})` : ''}`).join(', ')}`);
         }
         if (item.remocoes?.length) {
-          detalhes.push(`Sem: ${item.remocoes.join(', ')}`);
+          detalhes.push(`Sem: ${item.remocoes.map(escapeHtml).join(', ')}`);
         }
         const restricoesHtml = (item.restricoes || []).map(r =>
           `<span class="tag-restricao ${r}">${restricaoLabel(r)}</span>`
@@ -100,9 +98,9 @@
 
         return `
           <div class="cart-item">
-            <div class="cart-item-icon">${icons[1] ?? '🍽️'}</div>
+            <div class="cart-item-icon">${item.icone || '🍽️'}</div>
             <div class="cart-item-info">
-              <div class="cart-item-nome">${item.quantidade}× ${item.nome}</div>
+              <div class="cart-item-nome">${item.quantidade}× ${escapeHtml(item.nome)}</div>
               ${detalhes.length ? `<div class="cart-item-detalhes">${detalhes.join(' · ')}</div>` : ''}
               ${restricoesHtml ? `<div style="margin-bottom:8px">${restricoesHtml}</div>` : ''}
               <div class="cart-item-actions">

@@ -99,7 +99,7 @@ function abrirDetalhes(pedido) {
 
   const itensHtml = pedido.itens.map(item => {
     const extras = item.extras?.length
-      ? `<div style="font-size:var(--text-sm);color:var(--color-success)">+ ${item.extras.join(', ')}</div>`
+      ? `<div style="font-size:var(--text-sm);color:var(--color-success)">+ ${item.extras.map(e => `${e.nome}${e.quantidade > 1 ? ` (×${e.quantidade})` : ''}`).join(', ')}</div>`
       : '';
     const remocoes = item.remocoes?.length
       ? `<div style="font-size:var(--text-sm);color:var(--color-danger)">− ${item.remocoes.join(', ')}</div>`

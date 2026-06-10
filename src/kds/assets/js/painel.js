@@ -3,7 +3,8 @@ import { formatTime, formatElapsed, minutesAgo, proximoStatus, btnAvancarLabel, 
 import { iniciarPolling } from './polling.js';
 
 const COLUNAS = ['recebido', 'em-preparo', 'pronto'];
-let pedidosLocal  = [];
+let pedidosLocal      = [];
+let pedidosFinalizados = [];
 let idsConhecidos = new Set();
 
 /* -------- Som -------- */
@@ -88,14 +89,22 @@ function onNovosDados(pedidos) {
   );
   if (novosRecebidos.length > 0) tocarAlerta();
 
-  pedidosLocal = pedidos.map(p => ({
+  const pedidosMapeados = pedidos.map(p => ({
     ...p,
     status: statusLocal[p.id] ?? p.status,
-  })).filter(p => p.status !== 'finalizado');
+  }));
+
+  pedidosFinalizados = pedidosMapeados
+    .filter(p => p.status === 'finalizado')
+    .sort((a, b) => new Date(b.horario) - new Date(a.horario))
+    .slice(0, 10);
+
+  pedidosLocal = pedidosMapeados.filter(p => p.status !== 'finalizado');
 
   idsConhecidos = new Set(pedidos.map(p => p.id));
 
   renderTudo();
+  renderFinalizados();
   atualizarTotalBadge();
   setConexao(true);
 }
@@ -156,7 +165,7 @@ function renderCard(pedido) {
     <div class="pedido-item">
       <div class="pedido-item-nome">${item.quantidade}× ${item.produto}</div>
       ${item.extras?.length
-        ? `<div class="pedido-item-extras">+ ${item.extras.join(', ')}</div>`
+        ? `<div class="pedido-item-extras">+ ${item.extras.map(e => `${e.nome}${e.quantidade > 1 ? ` (×${e.quantidade})` : ''}`).join(', ')}</div>`
         : ''}
       ${item.remocoes?.length
         ? `<div class="pedido-item-remocoes">✕ Sem: ${item.remocoes.join(', ')}</div>`
@@ -236,7 +245,52 @@ function atualizarTempos() {
   });
 }
 
+function renderFinalizados() {
+  const body  = document.getElementById('finalizadosBody');
+  const count = document.getElementById('countFinalizado');
+  if (!body) return;
+
+  if (count) count.textContent = pedidosFinalizados.length;
+
+  if (!pedidosFinalizados.length) {
+    body.innerHTML = `
+      <div class="kds-col-empty">
+        <div class="kds-col-empty-icon">🗂️</div>
+        <div>Nenhum finalizado</div>
+      </div>`;
+    return;
+  }
+
+  body.innerHTML = pedidosFinalizados.map(p => `
+    <div class="pedido-card" style="opacity:0.7" data-id="${p.id}">
+      <div class="pedido-card-header">
+        <div class="pedido-header-info">
+          <span class="pedido-senha">${p.senha}</span>
+          <div class="pedido-meta">
+            <span class="pedido-hora">${formatTime(p.horario)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="pedido-card-body">
+        <div class="pedido-itens">
+          ${(p.itens || []).map(i => `
+            <div class="pedido-item">
+              <div class="pedido-item-nome">${i.quantidade}× ${i.produto}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
 function atualizarTotalBadge() {
   const badge = document.getElementById('totalBadge');
   if (badge) badge.textContent = `${pedidosLocal.length} pedido(s) ativo(s)`;
+
+  const badgeFin = document.getElementById('totalFinalizadosBadge');
+  if (badgeFin) {
+    badgeFin.textContent = `${pedidosFinalizados.length} finalizado(s) hoje`;
+    badgeFin.style.display = pedidosFinalizados.length > 0 ? '' : 'none';
+  }
 }

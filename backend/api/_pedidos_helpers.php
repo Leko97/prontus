@@ -7,7 +7,7 @@ function montar_pedido(PDO $pdo, array $pedido): array {
     $stmtItens->execute([(int)$pedido['id']]);
     $itensRows = $stmtItens->fetchAll();
 
-    $stmtExtras   = $pdo->prepare('SELECT nome FROM pedido_item_extras WHERE pedido_item_id = ?');
+    $stmtExtras   = $pdo->prepare('SELECT nome, preco_unitario, quantidade FROM pedido_item_extras WHERE pedido_item_id = ?');
     $stmtRemocoes = $pdo->prepare('SELECT nome FROM pedido_item_remocoes WHERE pedido_item_id = ?');
     $stmtRest     = $pdo->prepare('SELECT restricao_slug FROM pedido_item_restricoes WHERE pedido_item_id = ?');
 
@@ -15,7 +15,11 @@ function montar_pedido(PDO $pdo, array $pedido): array {
     foreach ($itensRows as $item) {
         $itemId = (int)$item['id'];
         $stmtExtras->execute([$itemId]);
-        $extras = array_column($stmtExtras->fetchAll(), 'nome');
+        $extras = array_map(fn($e) => [
+            'nome'       => $e['nome'],
+            'preco'      => (float)$e['preco_unitario'],
+            'quantidade' => (int)$e['quantidade'],
+        ], $stmtExtras->fetchAll());
         $stmtRemocoes->execute([$itemId]);
         $remocoes = array_column($stmtRemocoes->fetchAll(), 'nome');
         $stmtRest->execute([$itemId]);

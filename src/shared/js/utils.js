@@ -1,4 +1,13 @@
 /**
+ * Escapa caracteres HTML para inserção segura via innerHTML.
+ */
+export function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[ch]));
+}
+
+/**
  * Formata número para moeda brasileira: R$ 00,00
  */
 export function formatCurrency(value) {

@@ -1,8 +1,10 @@
 <?php
 function buscar_produto_completo(PDO $pdo, int $id): array {
     $stmt = $pdo->prepare(
-        'SELECT id, categoria_id, nome, descricao, preco, imagem
-         FROM produtos WHERE id = ? AND ativo = 1'
+        'SELECT p.id, p.categoria_id, p.nome, p.descricao, p.preco, p.imagem, c.icone AS categoria_icone
+         FROM produtos p
+         JOIN categorias c ON c.id = p.categoria_id
+         WHERE p.id = ? AND p.ativo = 1'
     );
     $stmt->execute([$id]);
     $row = $stmt->fetch();
@@ -31,6 +33,7 @@ function buscar_produto_completo(PDO $pdo, int $id): array {
         'descricao'   => $row['descricao'],
         'preco'       => (float)$row['preco'],
         'imagem'      => $row['imagem'],
+        'categoriaIcone' => $row['categoria_icone'] ?? '',
         'restricoes'  => $restricoes,
         'extras'      => $extras,
         'remocoes'    => $remocoes,

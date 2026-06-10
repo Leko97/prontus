@@ -24,8 +24,26 @@
   <!-- Conteúdo -->
   <div class="totem-container">
 
+    <!-- Busca -->
+    <div style="padding:0 0 12px 0;position:relative">
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="position:absolute;left:14px;font-size:18px;pointer-events:none">🔍</span>
+        <input
+          type="search"
+          id="buscaCardapio"
+          placeholder="Buscar no cardápio..."
+          autocomplete="off"
+          style="width:100%;padding:12px 14px 12px 42px;
+                 border:2px solid var(--color-border);border-radius:12px;
+                 font-size:var(--text-base);background:var(--color-surface);outline:none"
+        >
+      </div>
+      <div id="buscaVazio" class="hidden"
+           style="text-align:center;padding:32px 0;color:var(--color-text-muted)"></div>
+    </div>
+
     <!-- Filtros -->
-    <div class="filter-bar">
+    <div class="filter-bar" id="filtroBar">
       <div class="filter-bar-title">Filtrar por categoria</div>
       <div class="category-filters" id="categoryFilters">
 
@@ -35,27 +53,14 @@
             <span class="filter-icon">⚠️</span>
             <span class="filter-label">Restrições</span>
           </button>
-          <div class="restricao-dropdown hidden" id="restricaoDropdown">
-            <div class="restricao-option" data-value="sem-gluten">
-              <input type="checkbox"> <span class="tag-restricao sem-gluten">Sem Glúten</span>
-            </div>
-            <div class="restricao-option" data-value="vegetariano">
-              <input type="checkbox"> <span class="tag-restricao vegetariano">Vegetariano</span>
-            </div>
-            <div class="restricao-option" data-value="vegano">
-              <input type="checkbox"> <span class="tag-restricao vegano">Vegano</span>
-            </div>
-            <div class="restricao-option" data-value="sem-lactose">
-              <input type="checkbox"> <span class="tag-restricao sem-lactose">Sem Lactose</span>
-            </div>
-            <div class="restricao-option" data-value="sem-amendoim">
-              <input type="checkbox"> <span class="tag-restricao sem-amendoim">Sem Amendoim</span>
-            </div>
-          </div>
+          <div class="restricao-dropdown hidden" id="restricaoDropdown"></div>
         </div>
 
       </div>
     </div>
+
+    <!-- Combos em Destaque (renderizado via JS se existirem) -->
+    <div id="combosSection" class="hidden"></div>
 
     <!-- Grid de produtos -->
     <div class="produtos-section-title">Nosso cardápio</div>
@@ -80,16 +85,79 @@
 
   <script type="module" src="/src/totem/assets/js/cardapio.js"></script>
   <script type="module">
-    import { getConfiguracoes } from '/src/shared/js/api.js';
-    import { iniciarIdleTimer } from '/src/totem/assets/js/idle-timer.js';
+    import { escapeHtml } from '/src/shared/js/utils.js';
 
+    /* Carregar combos em destaque */
     try {
-      const config = await getConfiguracoes();
-      const segundos = parseInt(config.totem_idle_segundos, 10) || 60;
-      iniciarIdleTimer(segundos);
-    } catch {
-      iniciarIdleTimer(60);
-    }
+      const res = await fetch('/api/combos');
+      if (res.ok) {
+        const combos = await res.json();
+        if (combos.length) {
+          const section = document.getElementById('combosSection');
+          section.classList.remove('hidden');
+          section.innerHTML = `
+            <div class="produtos-section-title" style="color:var(--color-primary)">🎁 Combos em Destaque</div>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
+              ${combos.map(c => `
+                <div style="
+                  background:var(--color-surface);
+                  border:2px solid var(--color-primary);
+                  border-radius:14px;
+                  padding:16px;
+                  display:flex;
+                  align-items:center;
+                  justify-content:space-between;
+                  gap:12px
+                ">
+                  <div style="flex:1">
+                    <div style="font-weight:700;font-size:var(--text-lg)">${escapeHtml(c.nome)}</div>
+                    ${c.descricao ? `<div style="color:var(--color-text-muted);font-size:var(--text-sm);margin-top:2px">${escapeHtml(c.descricao)}</div>` : ''}
+                    <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:6px">
+                      ${(c.itens || []).map(i => `${i.quantidade}× ${escapeHtml(i.produto_nome)}`).join(' + ')}
+                    </div>
+                  </div>
+                  <div style="text-align:right;flex-shrink:0">
+                    <div style="font-size:var(--text-xl);font-weight:700;color:var(--color-primary)">
+                      R$ ${Number(c.preco).toFixed(2).replace('.', ',')}
+                    </div>
+                    <button
+                      class="btn btn-primary btn-sm"
+                      style="margin-top:8px"
+                      data-combo='${JSON.stringify(c)}'
+                      onclick="window._adicionarCombo(this)"
+                    >
+                      + Adicionar
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+      }
+    } catch { /* combos não disponíveis */ }
+
+    /* Adicionar todos os itens de um combo ao carrinho */
+    window._adicionarCombo = function(btn) {
+      const c = JSON.parse(btn.dataset.combo);
+      Promise.all([
+        import('/src/totem/assets/js/carrinho.js'),
+        import('/src/totem/assets/js/cardapio.js'),
+      ]).then(([{ adicionarItem }, { atualizarBarraCarrinho }]) => {
+        (c.itens || []).forEach(item => {
+          adicionarItem(
+            { id: item.produto_id, nome: item.produto_nome, preco: item.produto_preco, restricoes: [] },
+            [],
+            [],
+            item.quantidade
+          );
+        });
+        atualizarBarraCarrinho();
+        btn.textContent = '✓ Adicionado';
+        btn.disabled = true;
+        setTimeout(() => { btn.textContent = '+ Adicionar'; btn.disabled = false; }, 2000);
+      });
+    };
   </script>
 </body>
 </html>

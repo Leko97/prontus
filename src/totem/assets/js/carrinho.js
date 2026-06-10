@@ -19,6 +19,7 @@ export function adicionarItem(produto, extras, remocoes, quantidade) {
     produtoId:   produto.id,
     nome:        produto.nome,
     precoBase:   produto.preco,
+    icone:       produto.categoriaIcone || '🍽️',
     extras:      extras.map(e => ({ id: e.id, nome: e.nome, preco: e.preco, quantidade: e.quantidade })),
     remocoes,
     quantidade,

@@ -59,7 +59,9 @@ async function confirmarPagamento() {
       itens: carrinho.map(item => ({
         produtoId:  item.produtoId,
         quantidade: item.quantidade,
-        extras:     (item.extras || []).filter(e => (e.quantidade || 1) > 0).map(e => e.nome),
+        extras:     (item.extras || [])
+                      .filter(e => (e.quantidade || 1) > 0)
+                      .map(e => ({ id: e.id, nome: e.nome, quantidade: e.quantidade || 1 })),
         remocoes:   item.remocoes || [],
         restricoes: item.restricoes || [],
       })),
@@ -71,8 +73,21 @@ async function confirmarPagamento() {
 
     if (!resultado?.senha) throw new Error('Resposta inválida: campo "senha" ausente');
 
+    // Salva o resumo ANTES de limpar o carrinho (a tela de senha só lê o sessionStorage)
+    const carrinhoFinal = getCarrinho();
+    sessionStorage.setItem('prontus_ultimo_resumo', JSON.stringify({
+      itens: carrinhoFinal.map(i => ({
+        produto:    i.nome,
+        quantidade: i.quantidade,
+        extras:     (i.extras || []).map(e => e.nome),
+      })),
+      total: calcularTotal(),
+    }));
+
     limparCarrinho();
-    window.location.href = `/src/totem/pages/senha.php?senha=${encodeURIComponent(resultado.senha)}`;
+    const params = new URLSearchParams({ senha: resultado.senha });
+    if (resultado.id) params.set('pedido_id', resultado.id);
+    window.location.href = `/src/totem/pages/senha.php?${params.toString()}`;
   } catch (err) {
     console.error(err);
     if (alertEl) alertEl.classList.remove('hidden');

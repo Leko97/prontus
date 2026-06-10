@@ -106,7 +106,7 @@
 
   <script type="module">
     import { getProdutoById } from '/src/shared/js/api.js';
-    import { formatCurrency, getParam, restricaoLabel } from '/src/shared/js/utils.js';
+    import { formatCurrency, getParam, restricaoLabel, escapeHtml } from '/src/shared/js/utils.js';
     import { adicionarItem, atualizarItem, getCarrinho, totalItens } from '/src/totem/assets/js/carrinho.js';
 
     const produtoId = getParam('id');
@@ -146,8 +146,7 @@
 
     function renderProduto(p) {
       /* Ícone / imagem */
-      const icons = { 1: '🍔', 2: '🥤', 3: '🍨', 4: '🍟' };
-      document.getElementById('produtoImg').textContent = icons[p.categoriaId] ?? '🍽️';
+      document.getElementById('produtoImg').textContent = p.categoriaIcone || '🍽️';
 
       document.getElementById('produtoNome').textContent     = p.nome;
       document.getElementById('produtoDesc').textContent     = p.descricao || '';
@@ -164,7 +163,7 @@
       if (p.remocoes?.length) {
         const grid = document.getElementById('remocoesList');
         grid.innerHTML = p.remocoes.map(r => `
-          <button class="chip-remocao" data-remocao="${r}">${r}</button>
+          <button class="chip-remocao" data-remocao="${escapeHtml(r)}">${escapeHtml(r)}</button>
         `).join('');
 
         grid.querySelectorAll('.chip-remocao').forEach(chip => {
@@ -188,7 +187,7 @@
           return `
             <div class="extra-item" data-extra-id="${e.id}">
               <div>
-                <div class="extra-nome">${e.nome}</div>
+                <div class="extra-nome">${escapeHtml(e.nome)}</div>
                 <div class="extra-preco">+ ${formatCurrency(e.preco)}</div>
               </div>
               <div class="extra-controles">

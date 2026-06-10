@@ -1,0 +1,8 @@
+CREATE TABLE avaliacoes (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  pedido_id  INT NOT NULL,
+  nota       TINYINT NOT NULL CHECK (nota BETWEEN 1 AND 5),
+  criado_em  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
+  UNIQUE KEY uk_pedido (pedido_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

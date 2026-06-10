@@ -1,17 +1,20 @@
-import { getCardapio } from '/src/shared/js/api.js';
-import { formatCurrency, restricaoLabel } from '/src/shared/js/utils.js';
+import { getCardapio, getRestricoes } from '/src/shared/js/api.js';
+import { formatCurrency, restricaoLabel, escapeHtml } from '/src/shared/js/utils.js';
 import { totalItens, calcularTotal } from './carrinho.js';
 
 let todosCategoria = [];
 let todosProdutos  = [];
 let categoriaAtiva = null;
 let restricoesSelecionadas = new Set();
+let termoBusca = '';
+let debounceTimer = null;
 
 /* -------- Init -------- */
 document.addEventListener('DOMContentLoaded', async () => {
   atualizarBarraCarrinho();
   await carregarCardapio();
-  initRestricaoDropdown();
+  await initRestricaoDropdown();
+  initBusca();
 });
 
 async function carregarCardapio() {
@@ -66,10 +69,22 @@ function criarFiltroBtn(nome, icone, catId, ativo = false) {
 }
 
 /* -------- Dropdown de restrições -------- */
-function initRestricaoDropdown() {
+async function initRestricaoDropdown() {
   const btn = document.getElementById('btnRestricao');
   const dropdown = document.getElementById('restricaoDropdown');
   if (!btn || !dropdown) return;
+
+  // Popula opções a partir do banco
+  try {
+    const restricoes = await getRestricoes();
+    dropdown.innerHTML = restricoes.map(r => `
+      <div class="restricao-option" data-value="${escapeHtml(r.slug)}">
+        <input type="checkbox"> <span class="tag-restricao ${escapeHtml(r.slug)}">${escapeHtml(r.nome)}</span>
+      </div>
+    `).join('');
+  } catch {
+    /* mantém o que estiver no DOM como fallback */
+  }
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -107,6 +122,56 @@ function initRestricaoDropdown() {
   });
 }
 
+/* -------- Busca -------- */
+function initBusca() {
+  const input = document.getElementById('buscaCardapio');
+  const filtroBar = document.getElementById('filtroBar');
+  if (!input) return;
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      termoBusca = input.value.trim().toLowerCase();
+      if (termoBusca.length >= 2) {
+        /* Em busca ativa: esconder filtros de categoria */
+        if (filtroBar) filtroBar.style.display = 'none';
+        filtrarPorBusca(termoBusca);
+      } else {
+        if (filtroBar) filtroBar.style.display = '';
+        termoBusca = '';
+        aplicarFiltros();
+      }
+    }, 200);
+  });
+
+  input.addEventListener('search', () => {
+    if (!input.value) {
+      termoBusca = '';
+      if (filtroBar) filtroBar.style.display = '';
+      aplicarFiltros();
+    }
+  });
+}
+
+function filtrarPorBusca(termo) {
+  const resultado = todosProdutos.filter(p =>
+    p.nome.toLowerCase().includes(termo) ||
+    (p.descricao || '').toLowerCase().includes(termo)
+  );
+
+  const vazioBusca = document.getElementById('buscaVazio');
+  if (vazioBusca) {
+    if (!resultado.length) {
+      vazioBusca.textContent = `Nenhum produto encontrado para "${termo}"`;
+      vazioBusca.classList.remove('hidden');
+    } else {
+      vazioBusca.classList.add('hidden');
+    }
+  }
+
+  renderProdutos(resultado);
+}
+
 /* -------- Aplicar filtros combinados -------- */
 function aplicarFiltros() {
   let resultado = todosProdutos;
@@ -120,6 +185,9 @@ function aplicarFiltros() {
       [...restricoesSelecionadas].every(r => (p.restricoes || []).includes(r))
     );
   }
+
+  const vazioBusca = document.getElementById('buscaVazio');
+  if (vazioBusca) vazioBusca.classList.add('hidden');
 
   renderProdutos(resultado);
 }
@@ -148,8 +216,8 @@ function renderProdutos(produtos) {
       <a class="produto-card" href="/src/totem/pages/produto.php?id=${p.id}">
         <div class="produto-img">${icon}</div>
         <div class="produto-info">
-          <div class="produto-nome">${p.nome}</div>
-          <div class="produto-desc">${p.descricao || ''}</div>
+          <div class="produto-nome">${escapeHtml(p.nome)}</div>
+          <div class="produto-desc">${escapeHtml(p.descricao || '')}</div>
           ${restricoesHtml ? `<div class="produto-restricoes">${restricoesHtml}</div>` : ''}
         </div>
         <div class="produto-footer">

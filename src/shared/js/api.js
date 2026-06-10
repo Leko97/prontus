@@ -183,6 +183,12 @@ export async function salvarConfiguracoes(dados) {
   return fetchAPI('/configuracoes', { method: 'PUT', body: JSON.stringify(dados) });
 }
 
+/* -------- Restrições -------- */
+
+export async function getRestricoes() {
+  return fetchAPI('/restricoes');
+}
+
 /* -------- Remoções -------- */
 
 export async function getRemocoes(produtoId) {

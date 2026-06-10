@@ -7,6 +7,36 @@ $pdo    = get_pdo();
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
+    /* GET ?senha=XXX — consulta pública de status por senha (sem auth) */
+    if (isset($_GET['senha'])) {
+        $senhaRaw = trim($_GET['senha']);
+        /* Aceita "042" ou "#042" */
+        $senha = '#' . ltrim($senhaRaw, '#');
+
+        $stmt = $pdo->prepare(
+            "SELECT id, senha, status, DATE_FORMAT(horario, '%Y-%m-%dT%H:%i:%s') as horario
+             FROM pedidos
+             WHERE senha = ? AND DATE(horario) = CURDATE()
+             ORDER BY horario DESC
+             LIMIT 1"
+        );
+        $stmt->execute([$senha]);
+        $row = $stmt->fetch();
+
+        if (!$row) {
+            http_response_code(404);
+            echo json_encode(['erro' => 'Pedido não encontrado']);
+            exit;
+        }
+
+        json_response([
+            'id'      => (int)$row['id'],
+            'senha'   => $row['senha'],
+            'status'  => $row['status'],
+            'horario' => $row['horario'],
+        ]);
+    }
+
     $stmt = $pdo->query(
         "SELECT id, senha, status, DATE_FORMAT(horario, '%Y-%m-%dT%H:%i:%s') as horario
          FROM pedidos WHERE DATE(horario) = CURDATE() ORDER BY horario ASC"
@@ -18,16 +48,15 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    rate_limit_check($ip, 'pedidos');
+    rate_limit_add_attempt($ip, 'pedidos', 60, 20, 60);
+
     $data = input_json();
 
     if (empty($data['itens']) || !is_array($data['itens'])) {
         error_response('Campo "itens" obrigatório e deve ser um array');
     }
-
-    // Gera senha sequencial do dia
-    $countStmt = $pdo->query("SELECT COUNT(*) as total FROM pedidos WHERE DATE(horario) = CURDATE()");
-    $count     = (int)$countStmt->fetch()['total'];
-    $senha     = '#' . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
 
     $total = 0.0;
     $itensPreparados = [];
@@ -40,19 +69,41 @@ if ($method === 'POST') {
         $produto = $prodStmt->fetch();
         if (!$produto) error_response("Produto {$item['produtoId']} não encontrado", 404);
 
-        $extras        = $item['extras'] ?? [];
-        $remocoes      = $item['remocoes'] ?? [];
-        $restricoes    = $item['restricoes'] ?? [];
-        $quantidade    = (int)($item['quantidade'] ?? 1);
+        $quantidade = max(1, (int)($item['quantidade'] ?? 1));
+        $remocoes   = $item['remocoes'] ?? [];
+        $restricoes = $item['restricoes'] ?? [];
 
-        $total += (float)$produto['preco'] * $quantidade;
+        // Extras: preço SEMPRE resolvido no servidor a partir de `adicionais`
+        $extrasPreparados = [];
+        $somaExtras = 0.0;
+        foreach (($item['extras'] ?? []) as $ex) {
+            $exId  = (int)($ex['id'] ?? 0);
+            $exQtd = max(1, (int)($ex['quantidade'] ?? 1));
+            if ($exId <= 0) continue;
+
+            $adStmt = $pdo->prepare(
+                'SELECT nome, preco FROM adicionais WHERE id = ? AND produto_id = ? AND ativo = 1'
+            );
+            $adStmt->execute([$exId, (int)$produto['id']]);
+            $ad = $adStmt->fetch();
+            if (!$ad) continue; // extra inexistente/desativado é ignorado
+
+            $somaExtras += (float)$ad['preco'] * $exQtd;
+            $extrasPreparados[] = [
+                'nome'           => $ad['nome'],
+                'preco_unitario' => (float)$ad['preco'],
+                'quantidade'     => $exQtd,
+            ];
+        }
+
+        $total += ((float)$produto['preco'] + $somaExtras) * $quantidade;
 
         $itensPreparados[] = [
             'produto_id'     => (int)$produto['id'],
             'produto_nome'   => $produto['nome'],
             'preco_unitario' => (float)$produto['preco'],
             'quantidade'     => $quantidade,
-            'extras'         => $extras,
+            'extras'         => $extrasPreparados,
             'remocoes'       => $remocoes,
             'restricoes'     => $restricoes,
         ];
@@ -60,11 +111,34 @@ if ($method === 'POST') {
 
     $pdo->beginTransaction();
     try {
-        $stmtPedido = $pdo->prepare(
-            'INSERT INTO pedidos (senha, status, pagamento, total) VALUES (?, ?, ?, ?)'
-        );
-        $stmtPedido->execute([$senha, 'recebido', $data['pagamento'] ?? null, $total]);
-        $pedidoId = (int)$pdo->lastInsertId();
+        // Gera senha única do dia com retry em caso de colisão na UNIQUE (pedido_dia, senha)
+        $pedidoId   = null;
+        $senha      = null;
+        $maxRetries = 5;
+
+        for ($attempt = 0; $attempt < $maxRetries; $attempt++) {
+            $countStmt = $pdo->query(
+                "SELECT COUNT(*) AS total FROM pedidos WHERE DATE(horario) = CURDATE()"
+            );
+            $count = (int)$countStmt->fetch()['total'];
+            $senha = '#' . str_pad($count + 1 + $attempt, 3, '0', STR_PAD_LEFT);
+
+            try {
+                $stmtPedido = $pdo->prepare(
+                    'INSERT INTO pedidos (senha, status, pagamento, total) VALUES (?, ?, ?, ?)'
+                );
+                $stmtPedido->execute([$senha, 'recebido', $data['pagamento'] ?? null, $total]);
+                $pedidoId = (int)$pdo->lastInsertId();
+                break;
+            } catch (PDOException $e) {
+                // 23000 = violação de UNIQUE: outra requisição usou esta senha; tenta a próxima
+                if ($e->getCode() !== '23000') throw $e;
+            }
+        }
+
+        if ($pedidoId === null) {
+            throw new RuntimeException('Não foi possível gerar senha única após várias tentativas');
+        }
 
         foreach ($itensPreparados as $item) {
             $stmtItem = $pdo->prepare(
@@ -80,9 +154,11 @@ if ($method === 'POST') {
             ]);
             $itemId = (int)$pdo->lastInsertId();
 
-            foreach ($item['extras'] as $nome) {
-                $pdo->prepare('INSERT INTO pedido_item_extras (pedido_item_id, nome) VALUES (?, ?)')
-                    ->execute([$itemId, $nome]);
+            foreach ($item['extras'] as $ex) {
+                $pdo->prepare(
+                    'INSERT INTO pedido_item_extras (pedido_item_id, nome, preco_unitario, quantidade)
+                     VALUES (?, ?, ?, ?)'
+                )->execute([$itemId, $ex['nome'], $ex['preco_unitario'], $ex['quantidade']]);
             }
             foreach ($item['remocoes'] as $nome) {
                 $pdo->prepare('INSERT INTO pedido_item_remocoes (pedido_item_id, nome) VALUES (?, ?)')

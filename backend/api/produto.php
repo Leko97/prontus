@@ -26,12 +26,19 @@ if ($method === 'PUT') {
     $check->execute([$id]);
     if (!$check->fetch()) error_response('Produto não encontrado', 404);
 
+    $catId = (int)($data['categoriaId'] ?? $data['categoria_id'] ?? 0);
+    if ($catId <= 0) error_response('Campo "categoriaId" inválido ou ausente');
+
+    $catCheck = $pdo->prepare('SELECT id FROM categorias WHERE id = ? AND ativo = 1');
+    $catCheck->execute([$catId]);
+    if (!$catCheck->fetch()) error_response('Categoria não encontrada', 404);
+
     $stmt = $pdo->prepare(
         'UPDATE produtos SET categoria_id = ?, nome = ?, descricao = ?, preco = ?, imagem = ?
          WHERE id = ?'
     );
     $stmt->execute([
-        (int)($data['categoriaId'] ?? $data['categoria_id']),
+        $catId,
         $data['nome'],
         $data['descricao'] ?? '',
         (float)$data['preco'],

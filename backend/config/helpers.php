@@ -29,53 +29,53 @@ function require_admin(): array {
     return $usuario;
 }
 
-function rate_limit_check(string $ip): void {
-    $hash  = md5($ip);
-    $file  = sys_get_temp_dir() . '/prontus_rl_' . $hash . '.json';
-    $now   = time();
-
+function rate_limit_check(string $ip, string $scope = 'login'): void {
+    $file = sys_get_temp_dir() . '/prontus_rl_' . $scope . '_' . md5($ip) . '.json';
+    $now  = time();
     if (!file_exists($file)) return;
-
     $data = @json_decode(file_get_contents($file), true);
     if (!is_array($data)) return;
-
     if (!empty($data['blocked_until']) && $data['blocked_until'] > $now) {
         $wait = ceil(($data['blocked_until'] - $now) / 60);
-        error_response("Muitas tentativas de login. Aguarde {$wait} minuto(s).", 429);
+        error_response("Muitas requisições. Aguarde {$wait} minuto(s).", 429);
     }
 }
 
-function rate_limit_add_attempt(string $ip): void {
-    $hash     = md5($ip);
-    $file     = sys_get_temp_dir() . '/prontus_rl_' . $hash . '.json';
-    $now      = time();
-    $window   = 600;
-    $maxTries = 5;
-    $blockFor  = 900;
-
+function rate_limit_add_attempt(
+    string $ip, string $scope = 'login',
+    int $window = 600, int $maxTries = 5, int $blockFor = 900
+): void {
+    $file = sys_get_temp_dir() . '/prontus_rl_' . $scope . '_' . md5($ip) . '.json';
+    $now  = time();
     $data = ['blocked_until' => 0, 'attempts' => []];
     if (file_exists($file)) {
         $raw = @json_decode(file_get_contents($file), true);
         if (is_array($raw)) $data = $raw;
     }
-
     $data['attempts'] = array_values(array_filter(
-        $data['attempts'] ?? [],
-        fn($t) => $t > $now - $window
+        $data['attempts'] ?? [], fn($t) => $t > $now - $window
     ));
     $data['attempts'][] = $now;
-
     if (count($data['attempts']) >= $maxTries) {
         $data['blocked_until'] = $now + $blockFor;
         $data['attempts'] = [];
     }
-
     file_put_contents($file, json_encode($data), LOCK_EX);
 }
 
 function cors_headers(): void {
     $origem = $_SERVER['HTTP_ORIGIN'] ?? '';
-    $permitidas = ['http://159.223.165.79:8080', 'http://localhost:8080'];
+
+    $envOrigins = getenv('PRONTUS_CORS_ORIGINS');
+    $permitidas = $envOrigins
+        ? array_filter(array_map('trim', explode(',', $envOrigins)))
+        : [
+            'http://159.223.165.79:8080',
+            'http://localhost:8080',
+            'https://leko97.com.br',
+            'https://www.leko97.com.br',
+        ];
+
     if (in_array($origem, $permitidas, true)) {
         header("Access-Control-Allow-Origin: {$origem}");
     }

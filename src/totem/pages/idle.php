@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<?php $pageTitle = 'Prontus — Toque para começar'; require_once __DIR__ . '/inc/head.php'; ?>
+<?php $pageTitle = 'Prontus — Toque para começar'; $disableIdleTimer = true; require_once __DIR__ . '/inc/head.php'; ?>
 <style>
   html, body {
     height: 100%;

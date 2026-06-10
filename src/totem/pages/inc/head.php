@@ -6,4 +6,7 @@
   <link rel="stylesheet" href="/src/shared/css/reset.css">
   <link rel="stylesheet" href="/src/shared/css/components.css">
   <link rel="stylesheet" href="/src/totem/assets/css/totem.css">
+<?php if (empty($disableIdleTimer)): ?>
+  <script type="module" src="/src/totem/assets/js/idle-bootstrap.js"></script>
+<?php endif; ?>
 </head>

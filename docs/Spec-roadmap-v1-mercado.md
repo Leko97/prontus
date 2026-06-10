@@ -424,33 +424,33 @@ ALTER TABLE pedidos ADD INDEX idx_pagamento (pagamento);
 **Ação:** CRIAR
 
 **Mudanças:**
-- [ ] Campo de input grande para digitar o número da senha (ex: `042`)
-- [ ] Botão "Consultar"
-- [ ] Exibir status atual do pedido com ícone e cor de acordo com o status
-- [ ] Se status `pronto`: exibir destaque "🎉 Seu pedido está pronto! Retire no balcão."
-- [ ] Polling a cada 5s para atualizar automaticamente se a página estiver aberta
-- [ ] Link "Fazer novo pedido" no rodapé
+- [x] Campo de input grande para digitar o número da senha (ex: `042`)
+- [x] Botão "Consultar"
+- [x] Exibir status atual do pedido com ícone e cor de acordo com o status
+- [x] Se status `pronto`: exibir destaque "🎉 Seu pedido está pronto! Retire no balcão."
+- [x] Polling a cada 5s para atualizar automaticamente se a página estiver aberta
+- [x] Link "Fazer novo pedido" no rodapé
 
 ### [arquivo: src/totem/assets/js/acompanhar.js]
 **Ação:** CRIAR
 
 **Mudanças:**
-- [ ] Buscar `GET /api/pedidos/por-senha?senha=XXX` (novo endpoint)
-- [ ] Polling com flag (sem race condition)
-- [ ] Parar polling ao navegar para outra página
+- [x] Buscar `GET /api/pedidos/por-senha?senha=XXX` (novo endpoint)
+- [x] Polling com flag (sem race condition)
+- [x] Parar polling ao navegar para outra página
 
 ### [arquivo: backend/api/pedidos.php]
 **Ação:** MODIFICAR
 
 **Mudanças:**
-- [ ] Adicionar branch `GET` com parâmetro `?senha=XXX` que retorna apenas `{ id, senha, status, horario }` do pedido mais recente com aquela senha no dia
-- [ ] Não requer autenticação (público — cliente acessa)
+- [x] Adicionar branch `GET` com parâmetro `?senha=XXX` que retorna apenas `{ id, senha, status, horario }` do pedido mais recente com aquela senha no dia
+- [x] Não requer autenticação (público — cliente acessa)
 
 ### [arquivo: src/totem/pages/senha.php]
 **Ação:** MODIFICAR
 
 **Mudanças:**
-- [ ] Adicionar botão "📱 Acompanhar meu pedido" que leva para `acompanhar.php?senha=XXX`
+- [x] Adicionar botão "📱 Acompanhar meu pedido" que leva para `acompanhar.php?senha=XXX`
 
 ---
 
@@ -462,10 +462,10 @@ ALTER TABLE pedidos ADD INDEX idx_pagamento (pagamento);
 **Ação:** MODIFICAR
 
 **Mudanças:**
-- [ ] No `<head>`: carregar `GET /api/configuracoes` via fetch e injetar CSS variables `--color-primary` e `--color-secondary` dinamicamente
-- [ ] Mostrar logo do estabelecimento no header do display (de `configuracoes.logo_url`)
-- [ ] Mostrar `configuracoes.nome_estabelecimento` no header
-- [ ] Mostrar `configuracoes.mensagem_display` como rodapé rolante (marquee CSS)
+- [x] No `<head>`: carregar `GET /api/configuracoes` via fetch e injetar CSS variables `--color-primary` e `--color-secondary` dinamicamente
+- [x] Mostrar logo do estabelecimento no header do display (de `configuracoes.logo_url`)
+- [x] Mostrar `configuracoes.nome_estabelecimento` no header
+- [x] Mostrar `configuracoes.mensagem_display` como rodapé rolante (marquee CSS)
 
 ---
 
@@ -477,17 +477,17 @@ ALTER TABLE pedidos ADD INDEX idx_pagamento (pagamento);
 **Ação:** MODIFICAR
 
 **Mudanças:**
-- [ ] Adicionar 4ª coluna "✅ Finalizados" (colapsável ou com scroll separado, fundo mais escuro)
-- [ ] Coluna mostra os últimos 10 pedidos com status `finalizado` do dia (lista simples, sem botão de avançar)
-- [ ] Incluir contagem total do dia no header do KDS
+- [x] Adicionar 4ª coluna "✅ Finalizados" (colapsável ou com scroll separado, fundo mais escuro)
+- [x] Coluna mostra os últimos 10 pedidos com status `finalizado` do dia (lista simples, sem botão de avançar)
+- [x] Incluir contagem total do dia no header do KDS
 
 ### [arquivo: src/kds/assets/js/painel.js]
 **Ação:** MODIFICAR
 
 **Mudanças:**
-- [ ] Incluir pedidos `finalizado` no `pedidosLocal` (atualmente filtrados)
-- [ ] Renderizar coluna finalizado com função `renderCardFinalizado(p)` simplificada (apenas senha + hora + itens)
-- [ ] Limitar a 10 mais recentes para não sobrecarregar a tela
+- [x] Incluir pedidos `finalizado` no `pedidosLocal` (atualmente filtrados)
+- [x] Renderizar coluna finalizado com função `renderCardFinalizado(p)` simplificada (apenas senha + hora + itens)
+- [x] Limitar a 10 mais recentes para não sobrecarregar a tela
 
 ---
 
@@ -499,19 +499,19 @@ ALTER TABLE pedidos ADD INDEX idx_pagamento (pagamento);
 **Ação:** MODIFICAR
 
 **Mudanças:**
-- [ ] Adicionar `<input type="search">` no topo do cardápio com placeholder "Buscar no cardápio..."
-- [ ] Botão de lupa que expande o campo em mobile/totem
-- [ ] Ao digitar 2+ caracteres: filtrar produtos no DOM (sem nova requisição) por nome e descrição (case-insensitive)
-- [ ] Se nenhum resultado: mostrar "Nenhum produto encontrado para '...'"
-- [ ] Limpar busca = voltar à listagem normal com filtros de categoria
+- [x] Adicionar `<input type="search">` no topo do cardápio com placeholder "Buscar no cardápio..."
+- [x] Botão de lupa que expande o campo em mobile/totem
+- [x] Ao digitar 2+ caracteres: filtrar produtos no DOM (sem nova requisição) por nome e descrição (case-insensitive)
+- [x] Se nenhum resultado: mostrar "Nenhum produto encontrado para '...'"
+- [x] Limpar busca = voltar à listagem normal com filtros de categoria
 
 ### [arquivo: src/totem/assets/js/cardapio.js]
 **Ação:** MODIFICAR
 
 **Mudanças:**
-- [ ] Guardar array de todos os produtos em memória após carga inicial
-- [ ] Função `filtrarPorBusca(termo)` que itera sobre todos os produtos e renderiza apenas os que batem
-- [ ] Escutar `input` event no campo de busca com debounce de 200ms
+- [x] Guardar array de todos os produtos em memória após carga inicial
+- [x] Função `filtrarPorBusca(termo)` que itera sobre todos os produtos e renderiza apenas os que batem
+- [x] Escutar `input` event no campo de busca com debounce de 200ms
 
 ---
 
@@ -548,28 +548,28 @@ CREATE TABLE combo_itens (
 **Ação:** CRIAR
 
 **Mudanças:**
-- [ ] `GET /api/combos` — lista combos ativos com seus itens aninhados (público)
-- [ ] `POST /api/combos` — cria combo; requer admin; campos: `nome`, `descricao`, `preco`, `itens[]`
-- [ ] `PUT /api/combos/:id` — atualiza; requer admin
-- [ ] `DELETE /api/combos/:id` — soft-delete (ativo = 0); requer admin
+- [x] `GET /api/combos` — lista combos ativos com seus itens aninhados (público)
+- [x] `POST /api/combos` — cria combo; requer admin; campos: `nome`, `descricao`, `preco`, `itens[]`
+- [x] `PUT /api/combos/:id` — atualiza; requer admin
+- [x] `DELETE /api/combos/:id` — soft-delete (ativo = 0); requer admin
 
 ### [arquivo: src/admin/pages/combos.php]
 **Ação:** CRIAR
 
 **Mudanças:**
-- [ ] Tabela listando combos com colunas: nome, preço, nº de itens, status, ações (editar/excluir)
-- [ ] Modal para criar/editar combo:
+- [x] Tabela listando combos com colunas: nome, preço, nº de itens, status, ações (editar/excluir)
+- [x] Modal para criar/editar combo:
   - Campos: nome, descrição, preço, imagem URL
   - Seção "Itens do combo": multi-select de produtos com quantidade
-- [ ] Layout padrão admin
+- [x] Layout padrão admin
 
 ### [arquivo: src/totem/pages/index.php]
 **Ação:** MODIFICAR
 
 **Mudanças:**
-- [ ] Adicionar seção "Combos em Destaque" acima do cardápio principal (se existirem combos ativos)
-- [ ] Card de combo exibe nome, descrição, lista de itens incluídos e preço total
-- [ ] Botão "Adicionar combo" inclui todos os itens do combo no carrinho com um click
+- [x] Adicionar seção "Combos em Destaque" acima do cardápio principal (se existirem combos ativos)
+- [x] Card de combo exibe nome, descrição, lista de itens incluídos e preço total
+- [x] Botão "Adicionar combo" inclui todos os itens do combo no carrinho com um click
 
 ---
 
@@ -581,10 +581,10 @@ CREATE TABLE combo_itens (
 **Ação:** MODIFICAR
 
 **Mudanças:**
-- [ ] Adicionar seção "Como foi seu atendimento hoje?" após o resumo do pedido
-- [ ] 5 botões emoji (😡 😕 😐 🙂 😍) — escala de 1 a 5
-- [ ] Ao clicar: enviar `POST /api/avaliacoes { pedido_id, nota }` e mostrar "Obrigado pelo feedback!"
-- [ ] A seção desaparece após avaliação ou skip
+- [x] Adicionar seção "Como foi seu atendimento hoje?" após o resumo do pedido
+- [x] 5 botões emoji (😡 😕 😐 🙂 😍) — escala de 1 a 5
+- [x] Ao clicar: enviar `POST /api/avaliacoes { pedido_id, nota }` e mostrar "Obrigado pelo feedback!"
+- [x] A seção desaparece após avaliação ou skip
 
 ---
 

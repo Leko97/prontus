@@ -26,6 +26,7 @@
 
     <div class="kds-header-right">
       <span class="kds-total-badge" id="totalBadge">carregando…</span>
+      <span class="kds-total-badge" id="totalFinalizadosBadge" style="background:rgba(255,255,255,0.1);display:none"></span>
       <button class="btn-kds-som" id="btnSomToggle" title="Ativar/desativar alerta sonoro">🔔 Som: ON</button>
       <button class="btn-kds-logout" id="btnLogout">🚪 Sair</button>
     </div>
@@ -72,6 +73,20 @@
         <div class="kds-col-empty">
           <div class="kds-col-empty-icon">✓</div>
           <div>Nenhum pedido</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coluna: Finalizados -->
+    <div class="kds-col" data-status="finalizado" style="opacity:0.75">
+      <div class="kds-col-header" style="background:rgba(255,255,255,0.07)">
+        <span>🗂️ Finalizados hoje</span>
+        <span class="kds-col-count" id="countFinalizado">0</span>
+      </div>
+      <div class="kds-col-body" id="finalizadosBody">
+        <div class="kds-col-empty">
+          <div class="kds-col-empty-icon">🗂️</div>
+          <div>Nenhum finalizado</div>
         </div>
       </div>
     </div>

@@ -24,6 +24,7 @@ const NAV_LINKS = [
   { href: '/src/admin/pages/restricoes.php',   icon: '⚠️',  label: 'Restrições' },
   { href: '/src/admin/pages/usuarios.php',     icon: '👥', label: 'Usuários' },
   { href: '/src/admin/pages/pedidos.php',      icon: '📋', label: 'Pedidos' },
+  { href: '/src/admin/pages/combos.php',       icon: '🎁', label: 'Combos' },
   { href: '/src/admin/pages/relatorios.php',   icon: '📈', label: 'Relatórios' },
   { href: '/src/admin/pages/configuracoes.php',icon: '⚙️', label: 'Configurações' },
 ];

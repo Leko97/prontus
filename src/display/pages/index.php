@@ -6,9 +6,10 @@
   <!-- Header -->
   <header class="display-header">
     <div class="display-logo">
-      <div class="display-logo-icon">🍽️</div>
+      <img id="displayLogoImg" src="" alt="" style="height:40px;border-radius:6px;display:none">
+      <div class="display-logo-icon" id="displayLogoIcon">🍽️</div>
       <div>
-        <div class="display-logo-name">Prontus</div>
+        <div class="display-logo-name" id="displayNome">Prontus</div>
         <div class="display-logo-sub">Painel de Senhas</div>
       </div>
     </div>
@@ -56,6 +57,64 @@
 
   </div>
 
+  <!-- Rodapé marquee com mensagem personalizada -->
+  <div id="displayMarqueeBar" style="
+    position:fixed;bottom:0;left:0;right:0;
+    background:var(--color-primary,#FF6B35);
+    color:#fff;padding:10px 0;
+    font-size:16px;font-weight:500;
+    overflow:hidden;white-space:nowrap;
+    display:none
+  ">
+    <div id="displayMarqueeText" style="
+      display:inline-block;
+      padding-left:100%;
+      animation:marquee 20s linear infinite
+    "></div>
+  </div>
+
+  <style>
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-100%); }
+    }
+  </style>
+
   <script type="module" src="/src/display/assets/js/display.js"></script>
+  <script type="module">
+    /* Carregar configurações e personalizar o display */
+    try {
+      const res = await fetch('/api/configuracoes');
+      if (!res.ok) throw new Error();
+      const cfg = await res.json();
+
+      /* CSS variables dinâmicas */
+      if (cfg.cor_primaria)   document.documentElement.style.setProperty('--color-primary',   cfg.cor_primaria);
+      if (cfg.cor_secundaria) document.documentElement.style.setProperty('--color-secondary',  cfg.cor_secundaria);
+
+      /* Nome do estabelecimento */
+      const nomeEl = document.getElementById('displayNome');
+      if (nomeEl && cfg.nome_estabelecimento) nomeEl.textContent = cfg.nome_estabelecimento;
+
+      /* Logo */
+      if (cfg.logo_url) {
+        const img  = document.getElementById('displayLogoImg');
+        const icon = document.getElementById('displayLogoIcon');
+        img.src = cfg.logo_url;
+        img.style.display = 'block';
+        if (icon) icon.style.display = 'none';
+      }
+
+      /* Marquee */
+      if (cfg.mensagem_display) {
+        const bar  = document.getElementById('displayMarqueeBar');
+        const text = document.getElementById('displayMarqueeText');
+        text.textContent = cfg.mensagem_display;
+        bar.style.display = 'block';
+      }
+    } catch {
+      /* Sem configurações: mantém valores padrão */
+    }
+  </script>
 </body>
 </html>
