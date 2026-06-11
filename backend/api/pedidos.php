@@ -125,7 +125,7 @@ if ($method === 'POST') {
 
             try {
                 $stmtPedido = $pdo->prepare(
-                    'INSERT INTO pedidos (senha, status, pagamento, total) VALUES (?, ?, ?, ?)'
+                    'INSERT INTO pedidos (senha, status, pagamento, total, horario) VALUES (?, ?, ?, ?, NOW())'
                 );
                 $stmtPedido->execute([$senha, 'recebido', $data['pagamento'] ?? null, $total]);
                 $pedidoId = (int)$pdo->lastInsertId();
