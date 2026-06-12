@@ -48,6 +48,8 @@ $routes = [
     ['GET',    '#^/configuracoes$#',          'configuracoes.php'],
     ['PUT',    '#^/configuracoes$#',          'configuracoes.php'],
     ['GET',    '#^/restricoes$#',             'restricoes.php'],
+    ['POST',   '#^/restricoes$#',             'restricoes.php'],
+    ['PUT',    '#^/restricoes/([a-z0-9-]+)$#', 'restricoes.php', ['slug']],
     ['GET',    '#^/combos$#',                 'combos.php'],
     ['POST',   '#^/combos$#',                 'combos.php'],
     ['PUT',    '#^/combos/(\d+)$#',           'combos.php',   ['id']],

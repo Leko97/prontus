@@ -118,24 +118,26 @@
       const total = calcularTotal();
       document.getElementById('summarySubtotal').textContent = formatCurrency(total);
       document.getElementById('summaryTotal').textContent    = formatCurrency(total);
-
-      /* Editar */
-      list.querySelectorAll('.btn-editar').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const idx = btn.dataset.idx;
-          const item = carrinho[idx];
-          window.location.href = `/src/totem/pages/produto.php?id=${item.produtoId}&editar=${idx}`;
-        });
-      });
-
-      /* Remover */
-      list.querySelectorAll('.btn-remover').forEach(btn => {
-        btn.addEventListener('click', () => {
-          removerItem(Number(btn.dataset.idx));
-          render();
-        });
-      });
     }
+
+    /* Delegação de eventos: um único listener, registrado uma vez — os
+       índices são relidos do carrinho no momento do clique, evitando
+       handlers acumulados e remoção do item errado em cliques rápidos. */
+    document.getElementById('itensList').addEventListener('click', (ev) => {
+      const btn = ev.target.closest('.btn-editar, .btn-remover');
+      if (!btn) return;
+
+      const idx = Number(btn.dataset.idx);
+      const item = getCarrinho()[idx];
+      if (!item) return;
+
+      if (btn.classList.contains('btn-editar')) {
+        window.location.href = `/src/totem/pages/produto.php?id=${item.produtoId}&editar=${idx}`;
+      } else {
+        removerItem(idx);
+        render();
+      }
+    });
 
     render();
   </script>
