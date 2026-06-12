@@ -18,15 +18,15 @@
         <div class="kds-clock" id="kdsClock">00:00:00</div>
         <div class="kds-date" id="kdsDate"></div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px">
+      <div class="kds-conn">
         <div class="connection-dot" id="connDot" title="Conexão com o servidor"></div>
-        <span style="font-size:var(--text-xs);color:rgba(255,255,255,0.35)">ao vivo</span>
+        <span>ao vivo</span>
       </div>
     </div>
 
     <div class="kds-header-right">
       <span class="kds-total-badge" id="totalBadge">carregando…</span>
-      <span class="kds-total-badge" id="totalFinalizadosBadge" style="background:rgba(255,255,255,0.1);display:none"></span>
+      <span class="kds-total-badge" id="totalFinalizadosBadge" style="display:none"></span>
       <button class="btn-kds-som" id="btnSomToggle" title="Ativar/desativar alerta sonoro">🔔 Som: ON</button>
       <button class="btn-kds-logout" id="btnLogout">🚪 Sair</button>
     </div>
@@ -78,8 +78,8 @@
     </div>
 
     <!-- Coluna: Finalizados -->
-    <div class="kds-col" data-status="finalizado" style="opacity:0.75">
-      <div class="kds-col-header" style="background:rgba(255,255,255,0.07)">
+    <div class="kds-col" data-status="finalizado">
+      <div class="kds-col-header">
         <span>🗂️ Finalizados hoje</span>
         <span class="kds-col-count" id="countFinalizado">0</span>
       </div>

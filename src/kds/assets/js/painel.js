@@ -153,7 +153,6 @@ function renderCard(pedido) {
   const mins     = minutesAgo(pedido.horario);
   const elapsed  = formatElapsed(pedido.horario);
   const atrasado = pedido.status === 'em-preparo' && mins >= 10;
-  const proximo  = proximoStatus(pedido.status);
   const btnLabel = btnAvancarLabel(pedido.status);
 
   /* Restrições consolidadas de todos os itens */
@@ -163,12 +162,15 @@ function renderCard(pedido) {
 
   const itensHtml = (pedido.itens || []).map(item => `
     <div class="pedido-item">
-      <div class="pedido-item-nome">${item.quantidade}× ${item.produto}</div>
+      <div class="pedido-item-nome">
+        <span class="item-qtd">${item.quantidade}×</span>
+        <span class="item-produto">${item.produto}</span>
+      </div>
       ${item.extras?.length
-        ? `<div class="pedido-item-extras">+ ${item.extras.map(e => `${e.nome}${e.quantidade > 1 ? ` (×${e.quantidade})` : ''}`).join(', ')}</div>`
+        ? `<div class="pedido-item-extras">${item.extras.map(e => `+ ${e.nome}${e.quantidade > 1 ? ` ×${e.quantidade}` : ''}`).join('<br>')}</div>`
         : ''}
       ${item.remocoes?.length
-        ? `<div class="pedido-item-remocoes">✕ Sem: ${item.remocoes.join(', ')}</div>`
+        ? `<div class="pedido-item-remocoes">Sem ${item.remocoes.join(', ')}</div>`
         : ''}
     </div>
   `).join('');
@@ -179,26 +181,24 @@ function renderCard(pedido) {
 
   return `
     <div class="pedido-card ${atrasado ? 'atrasado' : ''}" data-id="${pedido.id}">
-      <div class="pedido-card-header">
-        <div class="pedido-header-info">
-          <span class="pedido-senha">${pedido.senha}</span>
-          <div class="pedido-meta">
-            <span class="pedido-hora">${formatTime(pedido.horario)}</span>
-            <span class="pedido-elapsed ${mins >= 10 ? 'urgente' : ''}">${elapsed}</span>
-          </div>
+      <div class="pedido-card-top">
+        <span class="pedido-senha">${pedido.senha}</span>
+        <div class="pedido-meta">
+          <span class="pedido-hora">${formatTime(pedido.horario)}</span>
+          <span class="pedido-elapsed ${mins >= 10 ? 'urgente' : ''}">${elapsed}</span>
         </div>
-        <button class="btn-avancar ${pedido.status}"
-          data-id="${pedido.id}"
-          data-status="${pedido.status}"
-          ${!proximo && pedido.status !== 'pronto' ? 'disabled' : ''}>
-          ${btnLabel}
-        </button>
       </div>
 
       <div class="pedido-card-body">
         ${restricoesHtml ? `<div class="pedido-restricoes">${restricoesHtml}</div>` : ''}
         <div class="pedido-itens">${itensHtml}</div>
       </div>
+
+      <button class="btn-avancar ${pedido.status}"
+        data-id="${pedido.id}"
+        data-status="${pedido.status}">
+        ${btnLabel}
+      </button>
     </div>
   `;
 }
@@ -262,20 +262,21 @@ function renderFinalizados() {
   }
 
   body.innerHTML = pedidosFinalizados.map(p => `
-    <div class="pedido-card" style="opacity:0.7" data-id="${p.id}">
-      <div class="pedido-card-header">
-        <div class="pedido-header-info">
-          <span class="pedido-senha">${p.senha}</span>
-          <div class="pedido-meta">
-            <span class="pedido-hora">${formatTime(p.horario)}</span>
-          </div>
+    <div class="pedido-card" data-id="${p.id}">
+      <div class="pedido-card-top">
+        <span class="pedido-senha">${p.senha}</span>
+        <div class="pedido-meta">
+          <span class="pedido-hora">${formatTime(p.horario)}</span>
         </div>
       </div>
       <div class="pedido-card-body">
         <div class="pedido-itens">
           ${(p.itens || []).map(i => `
             <div class="pedido-item">
-              <div class="pedido-item-nome">${i.quantidade}× ${i.produto}</div>
+              <div class="pedido-item-nome">
+                <span class="item-qtd">${i.quantidade}×</span>
+                <span class="item-produto">${i.produto}</span>
+              </div>
             </div>
           `).join('')}
         </div>
