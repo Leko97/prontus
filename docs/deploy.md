@@ -68,12 +68,97 @@ DB_HOST=localhost DB_PORT=3306 DB_NAME=prontus DB_USER=prontus DB_PASS=prontus20
 
 ## Acessar o sistema
 
-| Módulo | URL |
-|---|---|
-| Totem (cardápio) | `http://159.223.165.79:8080/src/totem/pages/index.php` |
-| KDS (cozinha) | `http://159.223.165.79:8080/src/kds/pages/index.php` |
-| Display (senhas) | `http://159.223.165.79:8080/src/display/pages/index.php` |
-| Admin | `http://159.223.165.79:8080/src/admin/pages/login.php` |
+Cada módulo tem um subdomínio dedicado (HTTPS) que faz proxy para o app na porta 8080.
+A raiz de cada subdomínio redireciona para a página de entrada do módulo.
+
+| Módulo | URL (produção) | Acesso direto (porta 8080) |
+|---|---|---|
+| Totem (cardápio) | `https://totem.leko97.com.br` | `http://159.223.165.79:8080/src/totem/pages/index.php` |
+| KDS (cozinha) | `https://kds.leko97.com.br` | `http://159.223.165.79:8080/src/kds/pages/index.php` |
+| Display (senhas) | `https://display.leko97.com.br` | `http://159.223.165.79:8080/src/display/pages/index.php` |
+| Admin | `https://admin.leko97.com.br` | `http://159.223.165.79:8080/src/admin/pages/login.php` |
+
+---
+
+## Subdomínios (Nginx vhosts)
+
+Cada módulo é um *virtual host* em `/etc/nginx/sites-available/<modulo>` (habilitado por
+symlink em `sites-enabled/`) que faz **proxy reverso para `127.0.0.1:8080`** — onde o
+PHP-FPM + Nginx do Prontus servem o app. Não há `root`/`fastcgi` nos vhosts de subdomínio;
+todo o processamento PHP acontece no bloco da porta 8080.
+
+### Certificado TLS
+
+Um único certificado Let's Encrypt **multi-SAN** cobre todos os subdomínios:
+
+- **Cert name:** `leko97.com.br` (em `/etc/letsencrypt/live/leko97.com.br/`)
+- **Domínios (SAN):** `leko97.com.br`, `www.leko97.com.br`, `admin.leko97.com.br`,
+  `kds.leko97.com.br`, `totem.leko97.com.br`, `display.leko97.com.br`
+- Renovação automática via tarefa agendada do certbot.
+
+> Não é wildcard. Ao adicionar um novo subdomínio, é preciso **expandir** o cert.
+
+### Como adicionar um novo subdomínio (ex.: `display.leko97.com.br`)
+
+Pré-requisito: o DNS do subdomínio já apontando para `159.223.165.79` (registro A).
+
+```bash
+# 1. Criar o vhost HTTP-only (necessário para o certbot validar via HTTP-01)
+cat > /etc/nginx/sites-available/display <<'NGINX'
+server {
+    listen 80;
+    server_name display.leko97.com.br;
+    location = / { return 301 https://display.leko97.com.br/src/display/pages/index.php; }
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+NGINX
+ln -sf /etc/nginx/sites-available/display /etc/nginx/sites-enabled/display
+nginx -t && systemctl reload nginx
+
+# 2. Expandir o certificado existente para incluir o novo domínio
+#    (certonly NÃO altera os vhosts dos outros módulos — só re-emite o cert)
+certbot certonly --nginx --cert-name leko97.com.br \
+  -d leko97.com.br -d www.leko97.com.br -d admin.leko97.com.br \
+  -d kds.leko97.com.br -d totem.leko97.com.br -d display.leko97.com.br \
+  --expand -n --agree-tos
+
+# 3. Reescrever o vhost com o bloco HTTPS (443) + redirect 80 -> 443
+cat > /etc/nginx/sites-available/display <<'NGINX'
+server {
+    server_name display.leko97.com.br;
+    location = / { return 301 https://display.leko97.com.br/src/display/pages/index.php; }
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/leko97.com.br/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/leko97.com.br/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+server {
+    if ($host = display.leko97.com.br) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+    listen 80;
+    server_name display.leko97.com.br;
+    return 404; # managed by Certbot
+}
+NGINX
+nginx -t && systemctl reload nginx
+```
+
+> **Display configurado em 2026-06-12** seguindo exatamente este procedimento.
+> Para outro módulo, basta trocar `display` e o caminho de entrada
+> (`/src/<modulo>/pages/...`) e incluir o novo `-d` na lista do certbot.
 
 ---
 
