@@ -88,9 +88,38 @@
     </div>
   </div>
 
+  <!-- Cupom impresso (visível apenas no print) -->
+  <div id="cupom" aria-hidden="true"></div>
+
+  <style>
+    #cupom { display: none; }
+
+    @media print {
+      body > *:not(#cupom) { display: none !important; }
+      #cupom {
+        display: block !important;
+        width: 72mm;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        color: #000;
+        line-height: 1.35;
+      }
+      @page { size: 80mm auto; margin: 4mm; }
+
+      #cupom .cupom-center { text-align: center; }
+      #cupom .cupom-loja   { font-size: 14px; font-weight: bold; }
+      #cupom .cupom-senha  { font-size: 32px; font-weight: bold; margin: 6px 0; }
+      #cupom .cupom-hr     { border-top: 1px dashed #000; margin: 6px 0; }
+      #cupom .cupom-item   { display: flex; justify-content: space-between; }
+      #cupom .cupom-extras { font-size: 10px; padding-left: 12px; }
+      #cupom .cupom-total  { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; }
+    }
+  </style>
+
   <script type="module">
     import { formatCurrency, getParam, escapeHtml } from '/src/shared/js/utils.js';
     import { limparCarrinho } from '/src/totem/assets/js/carrinho.js';
+    import { getConfiguracoes } from '/src/shared/js/api.js';
 
     const senha = getParam('senha') || '#???';
     document.getElementById('senhaBadge').textContent = senha;
@@ -126,6 +155,61 @@
         </div>
       `;
     }
+
+    /* Impressão do cupom: dispara só quando há resumo no sessionStorage,
+       que é removido logo abaixo — um reload da página não reimprime.
+       No totem, rodar o Chrome com --kiosk-printing imprime sem diálogo. */
+    async function imprimirCupom() {
+      if (!resumo?.itens?.length) return;
+
+      let nomeLoja = 'Prontus';
+      try {
+        const cfg = await getConfiguracoes();
+        if (cfg.nome_estabelecimento) nomeLoja = cfg.nome_estabelecimento;
+      } catch { /* mantém o nome padrão */ }
+
+      const PAGAMENTOS = { pix: 'Pix', cartao: 'Cartão', dinheiro: 'Dinheiro' };
+      const agora = new Date().toLocaleString('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+      });
+
+      const itensHtml = resumo.itens.map(item => `
+        <div class="cupom-item">
+          <span>${item.quantidade}× ${escapeHtml(item.produto)}</span>
+        </div>
+        ${item.extras?.length ? `<div class="cupom-extras">+ ${item.extras.map(escapeHtml).join(', ')}</div>` : ''}
+      `).join('');
+
+      document.getElementById('cupom').innerHTML = `
+        <div class="cupom-center cupom-loja">${escapeHtml(nomeLoja)}</div>
+        <div class="cupom-center">${agora}</div>
+        <div class="cupom-hr"></div>
+        <div class="cupom-center">SUA SENHA</div>
+        <div class="cupom-center cupom-senha">${escapeHtml(senha)}</div>
+        <div class="cupom-hr"></div>
+        ${itensHtml}
+        <div class="cupom-hr"></div>
+        ${resumo.total ? `
+          <div class="cupom-total">
+            <span>TOTAL</span>
+            <span>${formatCurrency(resumo.total)}</span>
+          </div>` : ''}
+        ${resumo.pagamento ? `
+          <div class="cupom-item">
+            <span>Pagamento</span>
+            <span>${escapeHtml(PAGAMENTOS[resumo.pagamento] || resumo.pagamento)}</span>
+          </div>` : ''}
+        <div class="cupom-hr"></div>
+        <div class="cupom-center">Aguarde sua senha ser chamada.</div>
+        <div class="cupom-center">Obrigado pela preferência!</div>
+      `;
+
+      /* Pequena espera para o layout assentar antes do print */
+      setTimeout(() => window.print(), 300);
+    }
+
+    imprimirCupom();
 
     /* Limpar dados da sessão */
     limparCarrinho();

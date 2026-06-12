@@ -97,6 +97,7 @@ async function confirmarPagamento() {
         extras:     (i.extras || []).map(e => e.nome),
       })),
       total: calcularTotal(),
+      pagamento: metodoPagamento,
     }));
 
     limparCarrinho();
