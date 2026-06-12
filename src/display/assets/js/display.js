@@ -62,8 +62,16 @@ function setConexao(online) {
 
 /* -------- Render -------- */
 function renderSenhas(senhas, anterior) {
-  renderColuna('emPreparoList', senhas.em_preparo || [], anterior?.em_preparo || [], false);
-  renderColuna('prontasList',   senhas.prontas    || [], anterior?.prontas    || [], true);
+  const emPreparo = senhas.em_preparo || [];
+  const prontas   = senhas.prontas    || [];
+
+  const cEmPreparo = document.getElementById('emPreparoCount');
+  const cProntas   = document.getElementById('prontasCount');
+  if (cEmPreparo) cEmPreparo.textContent = emPreparo.length;
+  if (cProntas)   cProntas.textContent   = prontas.length;
+
+  renderColuna('emPreparoList', emPreparo, anterior?.em_preparo || [], false);
+  renderColuna('prontasList',   prontas,   anterior?.prontas    || [], true);
 }
 
 function renderColuna(containerId, senhas, anteriores, eColunaProntas) {

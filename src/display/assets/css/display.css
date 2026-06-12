@@ -1,223 +1,201 @@
-/* ===== DISPLAY — TELA PÚBLICA DE TV ===== */
+/* =========================================================
+   DISPLAY — Painel público de senhas (TV) — redesign
+   Mesma linguagem do KDS: tema escuro, alto contraste,
+   glanceável de longe. Coluna "Prontas" como elemento herói.
+   Escala com a largura da tela (clamp por vw) p/ 1080p e 4K.
+   ========================================================= */
+
+:root {
+  --d-bg:        #0e1120;
+  --d-gutter:    #080a14;
+  --d-col:       #161a2c;
+  --d-line:      rgba(255,255,255,0.08);
+
+  --c-preparo:   #fbbf24;   /* âmbar */
+  --c-pronto:    #34d399;   /* verde */
+  --d-text:      #f3f5ff;
+  --d-text-2:    rgba(243,245,255,0.6);
+  --d-text-3:    rgba(243,245,255,0.32);
+}
+
 html, body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  font-size: 36px;
-  background: var(--color-secondary);
-  color: white;
+  /* fonte-base escala com a tela: ~40px em 1080p, limitada p/ 4K */
+  font-size: clamp(26px, 2.1vw, 48px);
+  background:
+    radial-gradient(1400px 700px at 50% -15%, #1b2140 0%, transparent 60%),
+    var(--d-bg);
+  color: var(--d-text);
   user-select: none;
+  font-feature-settings: "tnum" 1;
 }
 
-/* ===== HEADER ===== */
+/* =================== HEADER =================== */
 .display-header {
-  height: 80px;
-  background: rgba(0,0,0,0.3);
+  height: 2.4rem;
+  background: linear-gradient(180deg, rgba(26,31,55,0.9), rgba(20,24,49,0.6));
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-8);
+  padding: 0 1rem;
   flex-shrink: 0;
-  border-bottom: 2px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid var(--d-line);
 }
 
-.display-logo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-}
-
+.display-logo { display: flex; align-items: center; gap: 0.5rem; }
 .display-logo-icon {
-  width: 52px;
-  height: 52px;
-  background: var(--color-primary);
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
+  width: 1.4rem; height: 1.4rem;
+  background: linear-gradient(135deg, var(--color-primary, #FF6B35), #ff8c5e);
+  border-radius: 0.35rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem;
+  box-shadow: 0 0.1rem 0.4rem rgba(255,107,53,0.4);
   flex-shrink: 0;
 }
+.display-logo-name { font-size: 0.7rem; font-weight: var(--font-bold); letter-spacing: -0.01em; line-height: 1.1; }
+.display-logo-sub  { font-size: 0.32rem; color: var(--d-text-3); text-transform: uppercase; letter-spacing: 0.18em; margin-top: 0.1rem; }
 
-.display-logo-name {
-  font-size: 1.4rem;
-  font-weight: var(--font-bold);
-  letter-spacing: -0.02em;
-}
-
-.display-logo-sub {
-  font-size: 0.5rem;
-  color: rgba(255,255,255,0.45);
-  font-weight: var(--font-normal);
-}
+.display-header-right { display: flex; align-items: center; gap: 0.7rem; }
 
 .display-clock {
-  font-size: 2rem;
-  font-weight: var(--font-bold);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.06em;
-  color: rgba(255,255,255,0.9);
+  font-size: 1.05rem; font-weight: var(--font-bold);
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  color: #fff; line-height: 1;
 }
 
-.display-header-right {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
+.connection-status { display: flex; align-items: center; gap: 0.3rem; font-size: 0.32rem; color: var(--d-text-3); text-transform: uppercase; letter-spacing: 0.1em; }
+.conn-dot {
+  width: 0.28rem; height: 0.28rem; border-radius: 50%;
+  background: var(--c-pronto);
+  box-shadow: 0 0 0 0.12rem rgba(52,211,153,0.18);
+  animation: pulse 2s ease infinite; flex-shrink: 0;
 }
+.conn-dot.offline { background: var(--color-danger); box-shadow: 0 0 0 0.12rem rgba(231,76,60,0.18); animation: none; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
 .btn-fullscreen {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.5);
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition);
-  cursor: pointer;
+  width: 1.4rem; height: 1.4rem; border-radius: 0.35rem;
+  border: 1px solid var(--d-line); color: var(--d-text-2);
+  font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition); cursor: pointer; background: transparent;
 }
+.btn-fullscreen:hover { border-color: rgba(255,255,255,0.4); color: #fff; background: rgba(255,255,255,0.08); }
 
-.btn-fullscreen:hover {
-  border-color: rgba(255,255,255,0.4);
-  color: white;
-  background: rgba(255,255,255,0.08);
-}
-
-/* ===== BOARD PRINCIPAL ===== */
+/* =================== BOARD =================== */
 .display-board {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3px;
-  height: calc(100vh - 80px);
-  background: rgba(0,0,0,0.2);
+  grid-template-columns: 1fr 1.22fr;   /* "Prontas" um pouco mais larga (herói) */
+  gap: 1px;
+  height: calc(100vh - 2.4rem);
+  background: var(--d-gutter);
 }
 
-.display-col {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+.display-col { display: flex; flex-direction: column; overflow: hidden; background: var(--d-col); min-width: 0; }
+.display-col.prontas { background: linear-gradient(180deg, rgba(52,211,153,0.05), transparent 40%), var(--d-col); }
 
+/* Cabeçalho da coluna */
 .display-col-header {
-  padding: var(--space-5) var(--space-8);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding: 0.55rem 0.9rem;
+  display: flex; align-items: center; justify-content: space-between;
   flex-shrink: 0;
+  border-top: 0.12rem solid transparent;
+  background: rgba(255,255,255,0.02);
 }
-
-.display-col.em-preparo .display-col-header {
-  background: rgba(243,156,18,0.15);
-  border-bottom: 3px solid var(--color-warning);
-}
-
-.display-col.prontas .display-col-header {
-  background: rgba(39,174,96,0.15);
-  border-bottom: 3px solid var(--color-success);
-}
+.display-col.em-preparo .display-col-header { border-top-color: var(--c-preparo); }
+.display-col.prontas    .display-col-header { border-top-color: var(--c-pronto); }
 
 .display-col-title {
-  font-size: 0.8rem;
-  font-weight: var(--font-bold);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.7);
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.62rem; font-weight: var(--font-bold);
+  text-transform: uppercase; letter-spacing: 0.08em;
 }
+.display-col.em-preparo .display-col-title { color: var(--c-preparo); }
+.display-col.prontas    .display-col-title { color: var(--c-pronto); }
+.display-col-icon { font-size: 0.7rem; }
 
-.display-col.em-preparo .display-col-title { color: #f8c76a; }
-.display-col.prontas    .display-col-title { color: #6de8a0; }
-
-.display-col-icon { font-size: 1.2rem; }
+/* contador por coluna */
+.display-col-count {
+  min-width: 1.1rem; height: 1.1rem; padding: 0 0.3rem;
+  border-radius: 999px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem; font-weight: var(--font-bold); color: #0e1120;
+}
+.display-col.em-preparo .display-col-count { background: var(--c-preparo); }
+.display-col.prontas    .display-col-count { background: var(--c-pronto); }
 
 .display-col-body {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-wrap: wrap;
+  flex: 1; overflow: hidden;
+  display: flex; flex-wrap: wrap;
   align-content: flex-start;
-  gap: var(--space-5);
-  padding: var(--space-6) var(--space-8);
+  gap: 0.7rem;
+  padding: 0.9rem;
 }
 
-/* ===== SENHA PILL ===== */
+/* =================== SENHA PILL =================== */
 .senha-pill {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 180px;
-  height: 100px;
-  padding: 0 var(--space-8);
-  border-radius: var(--radius-lg);
-  font-size: 2rem;
-  font-weight: var(--font-bold);
-  letter-spacing: 0.04em;
-  animation: fadeInScale 0.4s ease;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  border-radius: 0.7rem;
+  animation: fadeInScale 0.4s cubic-bezier(0.2,0.8,0.3,1);
 }
+@keyframes fadeInScale { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
 
-@keyframes fadeInScale {
-  from { opacity: 0; transform: scale(0.75); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
+/* Em preparo: discreto, secundário */
 .display-col.em-preparo .senha-pill {
-  background: rgba(243,156,18,0.12);
-  border: 2px solid rgba(243,156,18,0.4);
-  color: #f8c76a;
+  min-width: 2.8em; height: 1.7em; padding: 0 0.5em;
+  font-size: 1.5rem;
+  background: rgba(251,191,36,0.1);
+  border: 0.06rem solid rgba(251,191,36,0.45);
+  color: var(--c-preparo);
 }
 
+/* Prontas: herói — maior, preenchida, com brilho */
 .display-col.prontas .senha-pill {
-  background: rgba(39,174,96,0.15);
-  border: 2px solid rgba(39,174,96,0.5);
-  color: #6de8a0;
+  min-width: 2.6em; height: 1.7em; padding: 0 0.55em;
+  font-size: 1.95rem;
+  background: linear-gradient(180deg, rgba(52,211,153,0.22), rgba(52,211,153,0.12));
+  border: 0.07rem solid rgba(52,211,153,0.6);
+  color: #c8ffe6;
+  box-shadow: 0 0.15rem 0.6rem rgba(52,211,153,0.18), inset 0 0 0.8rem rgba(52,211,153,0.08);
 }
 
-/* Animação de chamada: pisca 3x quando aparece em "Prontas" */
+/* Senha recém-chamada: chama atenção (escala + brilho pulsante) */
 .senha-pill.chamada {
-  animation: fadeInScale 0.4s ease, chamar 0.5s ease 0.4s 3;
+  animation: fadeInScale 0.35s ease, chamar 0.7s ease 0.35s 4;
 }
-
 @keyframes chamar {
-  0%, 100% { background: rgba(39,174,96,0.15); }
-  50%       { background: rgba(39,174,96,0.55); color: white; transform: scale(1.06); }
+  0%, 100% {
+    background: linear-gradient(180deg, rgba(52,211,153,0.22), rgba(52,211,153,0.12));
+    box-shadow: 0 0.15rem 0.6rem rgba(52,211,153,0.18);
+    transform: scale(1);
+  }
+  50% {
+    background: var(--c-pronto);
+    color: #06281c;
+    box-shadow: 0 0 0 0.18rem rgba(52,211,153,0.6), 0 0.3rem 1.6rem rgba(52,211,153,0.7);
+    transform: scale(1.08);
+  }
 }
 
-/* Estado vazio */
+/* =================== ESTADO VAZIO =================== */
 .display-col-empty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255,255,255,0.15);
-  text-align: center;
-  padding: var(--space-8);
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: var(--d-text-3); text-align: center; padding: 1rem;
 }
+.display-col-empty-icon { font-size: 1.6rem; margin-bottom: 0.4rem; opacity: 0.6; }
+.display-col-empty-text { font-size: 0.5rem; letter-spacing: 0.02em; }
 
-.display-col-empty-icon { font-size: 2rem; margin-bottom: var(--space-3); }
-.display-col-empty-text { font-size: 0.55rem; }
-
-/* Indicador de conexão */
-.connection-status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: 0.4rem;
-  color: rgba(255,255,255,0.35);
+/* =================== MARQUEE (rodapé) =================== */
+.display-marquee {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(90deg, var(--color-primary, #FF6B35), #ff8c5e);
+  color: #fff; padding: 0.3rem 0;
+  font-size: 0.55rem; font-weight: var(--font-semibold);
+  overflow: hidden; white-space: nowrap;
+  box-shadow: 0 -0.2rem 1rem rgba(0,0,0,0.35);
 }
-
-.conn-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--color-success);
-  animation: pulse 2s ease infinite;
-}
-
-.conn-dot.offline { background: var(--color-danger); animation: none; }
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
+.display-marquee-text { display: inline-block; padding-left: 100%; animation: marquee 22s linear infinite; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-100%); } }

@@ -30,8 +30,8 @@
     <!-- Coluna: Em Preparo -->
     <div class="display-col em-preparo">
       <div class="display-col-header">
-        <span class="display-col-title">⏳ Em Preparo</span>
-        <span class="display-col-icon">🔥</span>
+        <span class="display-col-title">🔥 Em Preparo</span>
+        <span class="display-col-count" id="emPreparoCount">0</span>
       </div>
       <div class="display-col-body" id="emPreparoList">
         <div class="display-col-empty">
@@ -44,8 +44,8 @@
     <!-- Coluna: Prontas para Retirada -->
     <div class="display-col prontas">
       <div class="display-col-header">
-        <span class="display-col-title">✅ Prontas para Retirada</span>
-        <span class="display-col-icon">🔔</span>
+        <span class="display-col-title">🔔 Prontas para Retirada</span>
+        <span class="display-col-count" id="prontasCount">0</span>
       </div>
       <div class="display-col-body" id="prontasList">
         <div class="display-col-empty">
@@ -58,27 +58,9 @@
   </div>
 
   <!-- Rodapé marquee com mensagem personalizada -->
-  <div id="displayMarqueeBar" style="
-    position:fixed;bottom:0;left:0;right:0;
-    background:var(--color-primary,#FF6B35);
-    color:#fff;padding:10px 0;
-    font-size:16px;font-weight:500;
-    overflow:hidden;white-space:nowrap;
-    display:none
-  ">
-    <div id="displayMarqueeText" style="
-      display:inline-block;
-      padding-left:100%;
-      animation:marquee 20s linear infinite
-    "></div>
+  <div id="displayMarqueeBar" class="display-marquee" style="display:none">
+    <div id="displayMarqueeText" class="display-marquee-text"></div>
   </div>
-
-  <style>
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-100%); }
-    }
-  </style>
 
   <script type="module" src="/src/display/assets/js/display.js"></script>
   <script type="module">
