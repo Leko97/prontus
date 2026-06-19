@@ -189,6 +189,18 @@ export async function getRestricoes() {
   return fetchAPI('/restricoes');
 }
 
+export async function getRestricoesAdmin() {
+  return fetchAPI('/restricoes?todas=1');
+}
+
+export async function criarRestricao(dados) {
+  return fetchAPI('/restricoes', { method: 'POST', body: JSON.stringify(dados) });
+}
+
+export async function atualizarRestricao(slug, dados) {
+  return fetchAPI(`/restricoes/${slug}`, { method: 'PUT', body: JSON.stringify(dados) });
+}
+
 /* -------- Remoções -------- */
 
 export async function getRemocoes(produtoId) {

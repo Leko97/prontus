@@ -5,6 +5,20 @@ import { getCarrinho, calcularTotal, limparCarrinho } from './carrinho.js';
 let metodoPagamento = null;
 let processando = false;
 
+/* Token de idempotência: um por tentativa de checkout. O backend usa este
+   token para não registrar o mesmo pedido duas vezes (clique repetido,
+   reload no meio da requisição etc.). Só é descartado após sucesso. */
+function getCheckoutToken() {
+  let token = sessionStorage.getItem('prontus_checkout_token');
+  if (!token) {
+    token = crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    sessionStorage.setItem('prontus_checkout_token', token);
+  }
+  return token;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   /* Total */
   const total = calcularTotal();
@@ -67,6 +81,7 @@ async function confirmarPagamento() {
       })),
       pagamento: metodoPagamento,
       total: calcularTotal(),
+      client_token: getCheckoutToken(),
     };
 
     const resultado = await criarPedido(payload);
@@ -82,9 +97,11 @@ async function confirmarPagamento() {
         extras:     (i.extras || []).map(e => e.nome),
       })),
       total: calcularTotal(),
+      pagamento: metodoPagamento,
     }));
 
     limparCarrinho();
+    sessionStorage.removeItem('prontus_checkout_token');
     const params = new URLSearchParams({ senha: resultado.senha });
     if (resultado.id) params.set('pedido_id', resultado.id);
     window.location.href = `/src/totem/pages/senha.php?${params.toString()}`;
@@ -96,3 +113,19 @@ async function confirmarPagamento() {
     processando = false;
   }
 }
+
+/* Página restaurada do bfcache (botão "voltar" após o pedido): o estado JS
+   antigo volta congelado. Re-sincroniza com o carrinho real. */
+window.addEventListener('pageshow', (e) => {
+  if (!e.persisted) return;
+  if (calcularTotal() === 0) {
+    window.location.href = '/src/totem/pages/index.php';
+    return;
+  }
+  processando = false;
+  const btn = document.getElementById('btnConfirmar');
+  if (btn) {
+    btn.disabled = !metodoPagamento;
+    btn.textContent = 'Confirmar pagamento';
+  }
+});

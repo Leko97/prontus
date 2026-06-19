@@ -44,11 +44,11 @@
             <div class="form-group">
               <label class="form-label" for="novaRestricaoCor">Cor do badge</label>
               <select id="novaRestricaoCor" class="form-control" style="height:44px">
-                <option value="warning">Amarelo (alerta)</option>
-                <option value="success">Verde</option>
-                <option value="danger">Vermelho</option>
-                <option value="info">Azul</option>
-                <option value="neutral">Cinza</option>
+                <option value="#F39C12">Amarelo (alerta)</option>
+                <option value="#27AE60">Verde</option>
+                <option value="#E74C3C">Vermelho</option>
+                <option value="#3498DB">Azul</option>
+                <option value="#95A5A6">Cinza</option>
               </select>
             </div>
             <button class="btn btn-primary" id="btnAddRestricao" style="flex-shrink:0;height:44px">
@@ -63,52 +63,67 @@
 
   <script type="module">
     import { initAdminPage, showToast } from '/src/admin/assets/js/admin.js';
+    import { getRestricoesAdmin, criarRestricao, atualizarRestricao } from '/src/shared/js/api.js';
+    import { escapeHtml } from '/src/shared/js/utils.js';
 
     await initAdminPage();
 
-    const DEFAULTS = [
-      { id: 'sem-gluten',   nome: 'Sem Glúten',   cor: 'warning', ativo: true },
-      { id: 'vegetariano',  nome: 'Vegetariano',   cor: 'success', ativo: true },
-      { id: 'vegano',       nome: 'Vegano',         cor: 'success', ativo: true },
-      { id: 'sem-lactose',  nome: 'Sem Lactose',   cor: 'info',    ativo: true },
-      { id: 'sem-amendoim', nome: 'Sem Amendoim',  cor: 'danger',  ativo: true },
-    ];
+    let restricoes = [];
 
-    let restricoes = JSON.parse(localStorage.getItem('prontus_restricoes') || 'null') || DEFAULTS;
-
-    function save() {
-      localStorage.setItem('prontus_restricoes', JSON.stringify(restricoes));
+    async function carregar() {
+      const list = document.getElementById('restricoesList');
+      try {
+        restricoes = await getRestricoesAdmin();
+        render();
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = '<p style="color:var(--color-text-muted)">Erro ao carregar restrições. Recarregue a página.</p>';
+      }
     }
 
     function render() {
       const list = document.getElementById('restricoesList');
-      list.innerHTML = restricoes.map((r, i) => `
+      list.innerHTML = restricoes.map(r => `
         <div class="toggle-wrapper">
           <div class="toggle-label">
             <strong>
-              <span class="badge badge-${r.cor}" style="margin-right:8px">${r.nome}</span>
-              ${r.nome}
+              <span class="badge" style="margin-right:8px;background:${escapeHtml(r.cor)};color:#fff">${escapeHtml(r.nome)}</span>
+              ${escapeHtml(r.nome)}
             </strong>
-            <span>Identificador: <code>${r.id}</code></span>
+            <span>Identificador: <code>${escapeHtml(r.slug)}</code></span>
           </div>
           <label class="toggle" title="${r.ativo ? 'Desativar' : 'Ativar'}">
-            <input type="checkbox" ${r.ativo ? 'checked' : ''} data-index="${i}">
+            <input type="checkbox" ${r.ativo ? 'checked' : ''} data-slug="${escapeHtml(r.slug)}">
             <span class="toggle-slider"></span>
           </label>
         </div>
       `).join('');
-
-      list.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-        cb.addEventListener('change', () => {
-          restricoes[Number(cb.dataset.index)].ativo = cb.checked;
-          save();
-          showToast(cb.checked ? 'Restrição ativada.' : 'Restrição desativada.');
-        });
-      });
     }
 
-    document.getElementById('btnAddRestricao')?.addEventListener('click', () => {
-      const nome = document.getElementById('novaRestricaoNome').value.trim();
+    document.getElementById('restricoesList').addEventListener('change', async (ev) => {
+      const cb = ev.target;
+      if (cb.type !== 'checkbox') return;
+
+      const slug = cb.dataset.slug;
+      const ativo = cb.checked;
+      cb.disabled = true;
+      try {
+        const atualizada = await atualizarRestricao(slug, { ativo });
+        const idx = restricoes.findIndex(r => r.slug === slug);
+        if (idx !== -1) restricoes[idx] = atualizada;
+        showToast(ativo ? 'Restrição ativada.' : 'Restrição desativada.');
+      } catch (err) {
+        console.error(err);
+        cb.checked = !ativo;
+        showToast('Erro ao salvar. Tente novamente.', 'error');
+      } finally {
+        cb.disabled = false;
+      }
+    });
+
+    document.getElementById('btnAddRestricao')?.addEventListener('click', async () => {
+      const nomeInput = document.getElementById('novaRestricaoNome');
+      const nome = nomeInput.value.trim();
       const cor  = document.getElementById('novaRestricaoCor').value;
 
       if (!nome) {
@@ -116,23 +131,28 @@
         return;
       }
 
-      const id = nome.toLowerCase()
-        .normalize('NFD').replace(/[̀-ͯ]/g, '')
-        .replace(/\s+/g, '-');
-
-      if (restricoes.find(r => r.id === id)) {
-        showToast('Já existe uma restrição com esse nome.', 'error');
-        return;
+      const btn = document.getElementById('btnAddRestricao');
+      btn.disabled = true;
+      try {
+        const nova = await criarRestricao({ nome, cor });
+        restricoes.push(nova);
+        render();
+        nomeInput.value = '';
+        showToast('Restrição adicionada.');
+      } catch (err) {
+        console.error(err);
+        showToast(
+          String(err.message).includes('409')
+            ? 'Já existe uma restrição com esse nome.'
+            : 'Erro ao salvar. Tente novamente.',
+          'error'
+        );
+      } finally {
+        btn.disabled = false;
       }
-
-      restricoes.push({ id, nome, cor, ativo: true });
-      save();
-      render();
-      document.getElementById('novaRestricaoNome').value = '';
-      showToast('Restrição adicionada.');
     });
 
-    render();
+    await carregar();
   </script>
 </body>
 </html>

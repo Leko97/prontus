@@ -54,6 +54,23 @@ if ($method === 'POST') {
 
     $data = input_json();
 
+    /* Idempotência: o totem envia um client_token por tentativa de checkout.
+       Se este token já gerou um pedido (ex.: clique repetido, reload no meio
+       da requisição), devolve o pedido existente em vez de criar outro. */
+    $clientToken = is_string($data['client_token'] ?? null)
+        ? substr(preg_replace('/[^a-zA-Z0-9-]/', '', $data['client_token']), 0, 64)
+        : '';
+    $tokenFile = $clientToken !== ''
+        ? sys_get_temp_dir() . '/prontus_pedido_tk_' . md5($clientToken) . '.json'
+        : null;
+
+    if ($tokenFile && file_exists($tokenFile) && filemtime($tokenFile) > time() - 3600) {
+        $anterior = @json_decode(file_get_contents($tokenFile), true);
+        if (is_array($anterior) && !empty($anterior['senha'])) {
+            json_response($anterior, 200);
+        }
+    }
+
     if (empty($data['itens']) || !is_array($data['itens'])) {
         error_response('Campo "itens" obrigatório e deve ser um array');
     }
@@ -183,7 +200,11 @@ if ($method === 'POST') {
     $pedidoRow->execute([$pedidoId]);
     $pedido = $pedidoRow->fetch();
 
-    json_response(montar_pedido($pdo, $pedido), 201);
+    $resposta = montar_pedido($pdo, $pedido);
+    if ($tokenFile) {
+        @file_put_contents($tokenFile, json_encode($resposta, JSON_UNESCAPED_UNICODE), LOCK_EX);
+    }
+    json_response($resposta, 201);
 }
 
 error_response('Método não permitido', 405);
